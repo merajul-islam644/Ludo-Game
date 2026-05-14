@@ -131,7 +131,6 @@ export const GameContext = ({ children }) => {
         }
       }
     }, 300);
-    setDiceValue(1);
     setIsRoled(false);
   };
 

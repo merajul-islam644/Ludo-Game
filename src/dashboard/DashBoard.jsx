@@ -11,6 +11,7 @@ const DashBoard = () => {
   const { setIsOpenModal, setModalType } = useContext(gameContext);
 
   const [user, setUser] = useState(null);
+  console.log(user);
 
   const navigate = useNavigate();
 

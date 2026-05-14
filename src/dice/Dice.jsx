@@ -49,29 +49,14 @@ function Dice({ myPlayer, activePlayer, nextTurn }) {
   return (
     <button
       onClick={rollDice}
-      disabled={isRolling || activePlayer !== myPlayer}
+      disabled={isRolling || activePlayer !== myPlayer || isRoled}
       className="
         w-16 h-16 flex items-center justify-center
         bg-white border border-gray-300 rounded-xl
         disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer
       "
     >
-      {isRoled ? (
-        <DiceIcon className={isRolling ? "animate-spin w-8 h-8" : "w-8 h-8"} />
-      ) : (
-        <div
-          className="
-    flex items-center justify-center
-    rounded
-    border-3 border-gray-600 p-0.5
-    shadow-md
-    transition-all duration-300
-    cursor-pointer
-  "
-        >
-          Roll
-        </div>
-      )}
+      <DiceIcon className={isRolling ? "animate-spin w-8 h-8" : "w-8 h-8"} />
     </button>
   );
 }
