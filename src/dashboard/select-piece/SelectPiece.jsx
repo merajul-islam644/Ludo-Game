@@ -14,6 +14,7 @@ import {
   pieceOfHome3,
   pieceOfHome4,
 } from "@/constant/constant";
+import { Label } from "@/components/ui/label";
 
 const createPieces = (count, startPositions) => {
   return Array.from({ length: count }, (_, i) => ({
@@ -22,6 +23,7 @@ const createPieces = (count, startPositions) => {
     isActive: false,
     isHome: true,
     stepsMoved: 0,
+    currentPosition : null
   }));
 };
 
@@ -33,7 +35,7 @@ const homeMap = {
 };
 
 const SelectPiece = () => {
-  const { players, setPlayers, error } = useContext(gameContext);
+  const { players, setPlayers } = useContext(gameContext);
 
   const handlePieceChange = (value) => {
     const count = Number(value);
@@ -53,19 +55,18 @@ const SelectPiece = () => {
   return (
     <div>
       <Select onValueChange={handlePieceChange}>
-        <SelectTrigger className="w-full rounded">
-          <SelectValue placeholder="Select Piece" />
+        <SelectTrigger className="w-full rounded-lg py-5 bg-pink-500 [&_svg]:text-white [&_svg]:size-6">
+          <SelectValue />
+          <Label className="text-white text-2xl font-bold">Select Piece</Label>
         </SelectTrigger>
 
-        <SelectContent className="rounded">
+        <SelectContent className="rounded w-full">
           <SelectItem value="2">2-Piece</SelectItem>
           <SelectItem value="4">4-Piece</SelectItem>
           <SelectItem value="6">6-Piece</SelectItem>
           <SelectItem value="8">8-Piece</SelectItem>
         </SelectContent>
       </Select>
-
-      <p className="text-sm text-red-500 mt-1">{error.pieceSelectionError}</p>
     </div>
   );
 };

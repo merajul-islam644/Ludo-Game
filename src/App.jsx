@@ -5,6 +5,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Login from "./authentication/Login";
 import Signup from "./authentication/Signup";
 import { Toaster } from "sonner";
+import BaseModal from "./modal/BaseModal";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
           }
         />
       </Routes>
+      <BaseModal/>
       <Toaster richColors position="bottom-right" />
     </div>
   );

@@ -1,43 +1,32 @@
-import { defaultValues, PLAYER_CONFIG } from "@/constant/constant";
+import {
+  defaultPlayers,
+  defaultValues,
+  PLAYER_CONFIG,
+} from "@/constant/constant";
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const gameContext = createContext();
 
 export const GameContext = ({ children }) => {
-  const navigate = useNavigate();
+  const [modalType, setModalType] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [shouldSave, setShouldSave] = useState(false);
-  const [error, setError] = useState({
-    playerSelectionError: "",
-    pieceSelectionError: "",
-    colorSelectionError: "",
-  });
   const [diceValue, setDiceValue] = useState(1);
-  const [players, setPlayers] = useState(
-    () => JSON.parse(localStorage.getItem("players")) || [],
-  );
+  const [isRoled, setIsRoled] = useState(false);
 
-  const resetError = () => {
-    setError({
-      playerSelectionError: "",
-      pieceSelectionError: "",
-      colorSelectionError: "",
-    });
-  };
+  const [players, setPlayers] = useState(() => {
+    const saved = localStorage.getItem("players");
+    return saved ? JSON.parse(saved) : defaultPlayers;
+  });
 
   useEffect(() => {
-    function name() {
-      if (shouldSave) {
-        localStorage.setItem("players", JSON.stringify(players));
-        setIsOpenModal(false);
-        resetError();
-      }
-      resetError();
-    }
-    name();
-  }, [players, shouldSave]);
+    localStorage.setItem("players", JSON.stringify(players));
+  }, [players]);
+
+  const savePlayers = () => {
+    localStorage.setItem("players", JSON.stringify(players));
+    setIsOpenModal(false);
+  };
 
   const handleSetPlayers = (value) => {
     const numberOfPlayers = Number(value);
@@ -72,7 +61,10 @@ export const GameContext = ({ children }) => {
           ...player,
           piece: player.piece.map((piece) =>
             piece.id === id && diceValue === 6
-              ? { ...piece, isHome: false }
+              ? {
+                  ...piece,
+                  isHome: false,
+                }
               : piece,
           ),
         };
@@ -80,73 +72,67 @@ export const GameContext = ({ children }) => {
     );
   };
 
-  // const handleCancelPiece = (allPath) => {
-  //   console.log(allPath);
-  // };
-
   const handleIncreacseStep = (playerStatus, id, nextTurn) => {
     let count = 0;
 
     const interval = setInterval(() => {
-      setShouldSave(true);
-      setPlayers((prev) =>
-        prev.map((player) => {
+      setPlayers((prev) => {
+        let movedPosition = null;
+        const updatedPlayers = prev.map((player) => {
           if (player.status !== playerStatus) return player;
 
           return {
             ...player,
-            piece: player.piece.map((piece) =>
-              piece.id === id
-                ? { ...piece, stepsMoved: piece.stepsMoved + 1 }
-                : piece,
-            ),
+            piece: player.piece.map((piece) => {
+              if (piece.id !== id) return piece;
+
+              const updatedSteps = piece.stepsMoved + 1;
+
+              movedPosition = player.path[updatedSteps];
+
+              return {
+                ...piece,
+                stepsMoved: updatedSteps,
+                currentPosition: movedPosition,
+              };
+            }),
           };
-        }),
-      );
+        });
+
+        return updatedPlayers.map((player) => {
+          if (player.status === playerStatus) return player;
+
+          return {
+            ...player,
+            piece: player.piece.map((piece) => {
+              if (piece.currentPosition === movedPosition) {
+                return {
+                  ...piece,
+                  isActive: false,
+                  isHome: true,
+                  stepsMoved: 0,
+                  currentPosition: null,
+                };
+              }
+
+              return piece;
+            }),
+          };
+        });
+      });
 
       count++;
-      if (count >= diceValue) clearInterval(interval);
+
+      if (count >= diceValue) {
+        clearInterval(interval);
+
+        if (diceValue < 6) {
+          nextTurn();
+        }
+      }
     }, 300);
-    nextTurn();
-  };
-
-  const handleNavigateToLudoBoard = () => {
-    if (players.length === 0) {
-      setError((prev) => ({
-        ...prev,
-        playerSelectionError: "No player selected",
-      }));
-      return;
-    }
-
-    if (players.some((player) => player.piece.length === 0)) {
-      setError((prev) => ({
-        ...prev,
-        pieceSelectionError: "No piece selected",
-      }));
-    }
-
-    if (players.some((player) => player.color === "")) {
-      setError((prev) => ({
-        ...prev,
-        colorSelectionError: "No color selected",
-      }));
-    } else {
-      navigate("/ludoBoard");
-    }
-  };
-
-  const handleColorSetModal = () => {
-    const hasPlayers = players.length > 0;
-
-    if (!hasPlayers) {
-      setError((prev) => ({
-        ...prev,
-        colorSelectionError: "No players available",
-      }));
-      return;
-    }
-    setIsOpenModal(true);
+    setDiceValue(1);
+    setIsRoled(false);
   };
 
   return (
@@ -154,18 +140,18 @@ export const GameContext = ({ children }) => {
       value={{
         isOpenModal,
         setIsOpenModal,
-        setShouldSave,
-        error,
+        savePlayers,
+        modalType,
+        setModalType,
         diceValue,
         setDiceValue,
+        isRoled,
+        setIsRoled,
         players,
         setPlayers,
         handleSetPlayers,
         handleToggle,
-        // handleCancelPiece,
         handleIncreacseStep,
-        handleNavigateToLudoBoard,
-        handleColorSetModal,
       }}
     >
       {children}

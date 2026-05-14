@@ -11,11 +11,18 @@ const diceMap = {
   6: Dice6,
 };
 
-function Dice({ myPlayer, activePlayer }) {
-  const { diceValue, setDiceValue } = useContext(gameContext);
+function Dice({ myPlayer, activePlayer, nextTurn }) {
+  const { diceValue, setDiceValue, players, isRoled, setIsRoled } =
+    useContext(gameContext);
   const [isRolling, setIsRolling] = useState(false);
 
+  const shouldNextTurn =
+    players
+      .find((player) => player.status === activePlayer)
+      ?.piece?.every((piece) => piece.isHome) ?? false;
+
   const rollDice = () => {
+    setIsRoled(true);
     if (isRolling) return;
 
     if (activePlayer !== myPlayer) return;
@@ -27,6 +34,13 @@ function Dice({ myPlayer, activePlayer }) {
       setDiceValue(random);
 
       setIsRolling(false);
+
+      if (diceValue < 6) {
+        if (shouldNextTurn) {
+          nextTurn();
+          setIsRoled(false);
+        }
+      }
     }, 300);
   };
 
@@ -42,7 +56,22 @@ function Dice({ myPlayer, activePlayer }) {
         disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer
       "
     >
-      <DiceIcon className={isRolling ? "animate-spin w-8 h-8" : "w-8 h-8"} />
+      {isRoled ? (
+        <DiceIcon className={isRolling ? "animate-spin w-8 h-8" : "w-8 h-8"} />
+      ) : (
+        <div
+          className="
+    flex items-center justify-center
+    rounded
+    border-3 border-gray-600 p-0.5
+    shadow-md
+    transition-all duration-300
+    cursor-pointer
+  "
+        >
+          Roll
+        </div>
+      )}
     </button>
   );
 }
