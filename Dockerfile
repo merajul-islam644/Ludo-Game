@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:22
 
 WORKDIR /app
 
@@ -12,4 +12,4 @@ RUN npm run build
 
 RUN npm install -g serve
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["serve", "-s", "dist", "-l", "3000"]
