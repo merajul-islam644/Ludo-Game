@@ -2,15 +2,18 @@ import AppHint from "@/common/AppHint";
 import { Button } from "@/components/ui/button";
 import {
   colorsMap,
+  destination,
+  endZone,
   path,
+  safeZone,
   setActiveHomePulse,
   setBorderAndColor,
   setIcon,
 } from "@/constant/constant";
 import { gameContext } from "@/constext/GameContext";
 import Dice from "@/dice/Dice";
-import { MapPin } from "lucide-react";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { Loader, MapPin } from "lucide-react";
+import { useContext } from "react";
 
 const EndZone = ({ size = 85, player1, player2, player3, player4 }) => {
   return (
@@ -22,31 +25,13 @@ const EndZone = ({ size = 85, player1, player2, player3, player4 }) => {
       <div
         className={`absolute content-center inset-0 ${player1?.color}`}
         style={{ clipPath: "polygon(50% 50%, 0% 100%, 0% 0%)" }}
-      >
-        {player1?.piece?.map((piece) =>
-          piece.stepsMoved >= (player1.path?.length || 0) && !piece.isHome ? (
-            <div
-              key={`${player1.status}-${piece.id}`}
-              className={`${player1?.color} h-3 w-3 rounded-full cursor-pointer border-3 border-white`}
-            />
-          ) : null,
-        )}
-      </div>
+      />
 
       {/* top right */}
       <div
         className={`absolute inset-0 ${player2?.color}`}
         style={{ clipPath: "polygon(50% 50%, 0% 0%, 100% 0%)" }}
-      >
-        {player2?.piece?.map((piece) =>
-          piece.stepsMoved >= (player2?.path?.length || 0) && !piece.isHome ? (
-            <div
-              key={`${player2.status}-${piece.id}`}
-              className={`${player2?.color} h-3 w-3 rounded-full cursor-pointer border-2 border-white`}
-            />
-          ) : null,
-        )}
-      </div>
+      />
 
       {/* bottom right */}
       <div
@@ -64,14 +49,6 @@ const EndZone = ({ size = 85, player1, player2, player3, player4 }) => {
 };
 
 const LudoBoard = () => {
-  const [currentPlayer, setCurrentPlayer] = useState(
-    () => JSON.parse(localStorage.getItem("currentPlayer")) || 0,
-  );
-
-  useEffect(() => {
-    localStorage.setItem("currentPlayer", JSON.stringify(currentPlayer));
-  }, [currentPlayer]);
-
   const {
     players,
     handleToggle,
@@ -79,25 +56,13 @@ const LudoBoard = () => {
     setIsOpenModal,
     setModalType,
     isRoled,
+    player1,
+    player2,
+    player3,
+    player4,
+    activePlayer,
+    nextTurn,
   } = useContext(gameContext);
-
-  const player1 = players?.find((p) => p.status === "player-1");
-  const player2 = players?.find((p) => p.status === "player-2");
-  const player3 = players?.find((p) => p.status === "player-3");
-  const player4 = players?.find((p) => p.status === "player-4");
-
-  const playersArray = [
-    player1?.status,
-    player2?.status,
-    player3?.status,
-    player4?.status,
-  ];
-
-  const activePlayer = playersArray[currentPlayer];
-
-  const nextTurn = useCallback(() => {
-    setCurrentPlayer((prev) => (prev + 1) % players.length);
-  }, [players.length]);
 
   return (
     <div>
@@ -126,11 +91,7 @@ const LudoBoard = () => {
                   border: `1px solid ${colorsMap[player1?.color]}`,
                 }}
               >
-                <Dice
-                  myPlayer={player1?.status}
-                  activePlayer={activePlayer}
-                  nextTurn={nextTurn}
-                />
+                <Dice playerStatus={player1.status} />
               </div>
 
               <div className="flex flex-col gap-3 items-center">
@@ -148,7 +109,16 @@ const LudoBoard = () => {
               </div>
             </div>
 
-            {/* Player 3 */}
+            <div className="flex justify-center items-center animate-bounce">
+              {activePlayer === player1.status && (
+                <div className="text-3xl">👈</div>
+              )}
+              {activePlayer === player2.status && (
+                <div className="text-3xl">👉</div>
+              )}
+            </div>
+
+            {/* Player 2 */}
             <div
               className={`flex items-center gap-3 ${activePlayer === player2?.status && "animate-pulse"}`}
             >
@@ -173,54 +143,62 @@ const LudoBoard = () => {
                   border: `1px solid ${colorsMap[player2?.color]}`,
                 }}
               >
-                <Dice
-                  myPlayer={player2?.status}
-                  activePlayer={activePlayer}
-                  nextTurn={nextTurn}
-                />
+                <Dice playerStatus={player2.status} />
               </div>
             </div>
           </div>
           <div className="grid grid-cols-15 place-items-center relative my-1">
-            {path.map((allPath) => (
-              <div
-                key={allPath}
-                className={`flex justify-center items-center ${setActiveHomePulse(allPath, players, activePlayer)} ${setBorderAndColor(
-                  allPath,
-                  players,
-                  activePlayer,
-                )}`}
-                // onMouseOver={() => console.log(allPath)}
-              >
-                <div>{setIcon(allPath)}</div>
+            {path.map((allPath) => {
+              const isSafeZone = safeZone.includes(allPath);
 
-                {players?.map((player) =>
-                  player?.piece?.map((piece) =>
-                    piece.position === allPath && piece.isHome ? (
-                      <MapPin
-                        size={20}
-                        color={colorsMap[player.color]}
-                        key={`${player.status}-${piece.id}`}
-                        className={`cursor-pointer`}
-                        onClick={() => {
-                          if (activePlayer === player.status && isRoled) {
-                            handleToggle(player.status, piece.id);
-                          }
-                        }}
-                      ></MapPin>
-                    ) : !piece.isHome ? (
-                      player?.path?.map((path, index) =>
-                        path === allPath && index === piece.stepsMoved ? (
-                          <AppHint
-                            key={`${player.status}-${piece.id}-${index}`}
-                            text="Move Piece"
-                          >
+              const boxUI = (
+                <div
+                  className={`flex justify-center items-center ${setActiveHomePulse(
+                    allPath,
+                    players,
+                    activePlayer,
+                  )} ${setBorderAndColor(allPath, players, activePlayer)}`}
+                >
+                  <div>
+                    {player1.path.includes(allPath) && (
+                      <Loader className="animate-spin" />
+                    )}
+                  </div>
+                  <div className="absolute insert-0 -z-10">
+                    {setIcon(allPath, player1, player2, player3, player4)}
+                  </div>
+                  {/* PIECES */}
+                  {players?.map((player) =>
+                    player?.piece?.map((piece) =>
+                      piece.position === allPath && piece.isHome ? (
+                        <MapPin
+                          size={20}
+                          color={colorsMap[player.color]}
+                          key={`${player.status}-${piece.id}`}
+                          onClick={() => {
+                            if (activePlayer === player.status && isRoled) {
+                              handleToggle(player.status, piece.id, allPath);
+                            }
+                          }}
+                        />
+                      ) : !piece.isHome ? (
+                        player?.path?.map((p, index) =>
+                          p === allPath && index === piece.stepsMoved ? (
                             <MapPin
-                              size={20}
-                              color={colorsMap[player.color]}
-                              className="cursor-pointer"
+                              key={`${player.status}-${piece.id}-${index}`}
+                              size={destination.includes(p) ? 10 : 20}
+                              color={
+                                destination.includes(p)
+                                  ? "white"
+                                  : colorsMap[player.color]
+                              }
                               onClick={() => {
-                                if (activePlayer === player.status && isRoled) {
+                                if (
+                                  activePlayer === player.status &&
+                                  isRoled &&
+                                  !safeZone.includes(p) &&
+                                  !endZone.includes(p)
+                                ) {
                                   handleIncreacseStep(
                                     player.status,
                                     piece.id,
@@ -229,17 +207,25 @@ const LudoBoard = () => {
                                 }
                               }}
                             />
-                          </AppHint>
-                        ) : null,
-                      )
-                    ) : null,
-                  ),
-                )}
-                {/* {allPath}, */}
-              </div>
-            ))}
+                          ) : null,
+                        )
+                      ) : null,
+                    ),
+                  )}
+                  {/* {allPath}, */}
+                </div>
+              );
 
-            <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+              return isSafeZone ? (
+                <AppHint key={allPath} position={allPath}>
+                  {boxUI}
+                </AppHint>
+              ) : (
+                <div key={allPath}>{boxUI}</div>
+              );
+            })}
+
+            <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] -z-50">
               <EndZone
                 player1={player1}
                 player2={player2}
@@ -260,11 +246,7 @@ const LudoBoard = () => {
                   border: `1px solid ${colorsMap[player4?.color]}`,
                 }}
               >
-                <Dice
-                  myPlayer={player4?.status}
-                  activePlayer={activePlayer}
-                  nextTurn={nextTurn}
-                />
+                <Dice playerStatus={player4.status} />
               </div>
 
               <div className="flex flex-col gap-3 items-center">
@@ -281,6 +263,15 @@ const LudoBoard = () => {
                   <MapPin color={colorsMap[player4?.color]} />
                 </div>
               </div>
+            </div>
+
+            <div className="flex justify-center items-center animate-bounce">
+              {activePlayer === player3.status && (
+                <div className="text-3xl">👉</div>
+              )}
+              {activePlayer === player4.status && (
+                <div className="text-3xl">👈</div>
+              )}
             </div>
 
             {/* Player 3 */}
@@ -309,11 +300,7 @@ const LudoBoard = () => {
                   border: `1px solid ${colorsMap[player3?.color]}`,
                 }}
               >
-                <Dice
-                  myPlayer={player3?.status}
-                  activePlayer={activePlayer}
-                  nextTurn={nextTurn}
-                />
+                <Dice playerStatus={player3.status} />
               </div>
             </div>
           </div>

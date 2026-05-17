@@ -11,114 +11,188 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { MapPin } from "lucide-react";
+import { colorsMap } from "@/constant/constant";
+import { gameContext } from "@/constext/GameContext";
 
-// 🔥 Desktop / Mobile fallback UI
-const DesktopBox = () => (
-  <div className="grid grid-cols-2 gap-1 w-20 h-20">
-    <div className="bg-white/10 rounded-sm" />
-    <div className="bg-white/10 rounded-sm" />
-    <div className="bg-white/10 rounded-sm" />
-    <div className="bg-white/10 rounded-sm" />
-  </div>
-);
+const DesktopBox = ({ pieces }) => {
+  const { handleIncreacseStep, nextTurn } = useContext(gameContext);
+  return (
+    <div className="rounded-2xl border border-cyan-400/20 bg-black/70 p-4 backdrop-blur-md shadow-[0_0_25px_rgba(34,211,238,0.08)]">
+      {/* Header */}
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold tracking-wide text-cyan-300">
+          Safe Zone
+        </h3>
+      </div>
 
-const MobileBox = () => (
-  <div
-    className="
-      w-40
-      p-3
-      rounded-2xl
-      bg-black/70
-      border border-cyan-400/20
-      backdrop-blur-xl
-      shadow-[0_0_25px_rgba(34,211,238,0.2)]
-    "
-  >
-    {/* Title */}
-    <div className="text-center text-xs text-cyan-300 mb-2 font-semibold">
-      Move Options
+      {/* Content */}
+      {pieces.length > 0 ? (
+        <div className="grid grid-cols-3 gap-2">
+          {pieces.map((piece) => (
+            <button
+              onClick={() =>
+                handleIncreacseStep(piece.playerStatus, piece.id, nextTurn)
+              }
+              key={`${piece.playerStatus}-${piece.id}`}
+              className="
+            group relative flex h-7 w-7 items-center justify-center
+            rounded-full border border-white/10
+            bg-white/5 transition-all duration-200
+            hover:scale-105 hover:border-cyan-400/40
+            hover:bg-cyan-400/10
+          "
+            >
+              {/* Glow */}
+              <div
+                className="absolute inset-0 rounded-full blur-sm opacity-40 cursor-pointer"
+                style={{
+                  backgroundColor: colorsMap[piece.color],
+                }}
+              />
+
+              {/* Icon */}
+              <MapPin
+                size={18}
+                color={colorsMap[piece.color]}
+                className="relative z-10 cursor-pointer"
+              />
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex h-10 items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.03]">
+          <span className="text-xs text-white/40">Empty</span>
+        </div>
+      )}
     </div>
+  );
+};
 
-    {/* Grid */}
-    <div className="grid grid-cols-2 gap-2">
-      <div className="h-14 bg-white/10 rounded-lg flex items-center justify-center text-white/70 text-sm">
-        1
+const MobileBox = ({ pieces }) => {
+  const { handleIncreacseStep, nextTurn } = useContext(gameContext);
+  return (
+    <div className="w-32 rounded-xl border border-cyan-400/20 bg-black/80 p-2 backdrop-blur-xl shadow-[0_0_20px_rgba(34,211,238,0.06)]">
+      {/* Header */}
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold tracking-wide text-cyan-300">
+          Safe Zone
+        </h3>
       </div>
-      <div className="h-14 bg-white/10 rounded-lg flex items-center justify-center text-white/70 text-sm">
-        2
-      </div>
-      <div className="h-14 bg-white/10 rounded-lg flex items-center justify-center text-white/70 text-sm">
-        3
-      </div>
-      <div className="h-14 bg-white/10 rounded-lg flex items-center justify-center text-white/70 text-sm">
-        4
-      </div>
+
+      {/* Content */}
+      {pieces.length > 0 ? (
+        <div className="grid grid-cols-3 gap-1.5">
+          {pieces.map((piece) => (
+            <button
+              onClick={() =>
+                handleIncreacseStep(piece.playerStatus, piece.id, nextTurn)
+              }
+              key={`${piece.playerStatus}-${piece.id}`}
+              className="
+                group relative flex h-6 items-center justify-center
+                rounded-lg border border-white/10
+                bg-white/5 transition-all duration-200
+                active:scale-95
+              "
+            >
+              {/* Glow */}
+              <div
+                className="absolute inset-0 rounded-lg blur-sm opacity-40 cursor-pointer"
+                style={{
+                  backgroundColor: colorsMap[piece.color],
+                }}
+              />
+
+              {/* Icon */}
+              <MapPin
+                size={16}
+                color={colorsMap[piece.color]}
+                className="relative z-10"
+              />
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div
+          className="
+            flex h-14 items-center justify-center rounded-lg
+            border border-dashed border-white/10
+            bg-white/[0.03]
+          "
+        >
+          <span className="text-[10px] text-white/40">Empty</span>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
-const AppHint = ({
-  children,
-  side = "top",
-  className = "",
-  mobileContent,
-  desktopContent,
-}) => {
+const AppHint = ({ children, position, className }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const { players } = useContext(gameContext);
 
+  // detect mobile
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
-
     check();
     window.addEventListener("resize", check);
-
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const content =
-    mobileContent ||
-    desktopContent ||
-    (isMobile ? <MobileBox /> : <DesktopBox />);
+  // 🔥 FIND PIECES ON THIS POSITION
+  const piecesOnBox = useMemo(() => {
+    return players.flatMap((player) =>
+      player.piece
+        .filter((piece) => {
+          // HOME PIECE
+          if (piece.isHome) {
+            return piece.position === position;
+          }
 
-  // 🔥 MOBILE → POPOVER
+          // MOVING PIECE ON PATH
+          return player.path?.[piece.stepsMoved] === position;
+        })
+        .map((piece) => ({
+          id: piece.id,
+          playerStatus: player.status,
+          color: player.color,
+        })),
+    );
+  }, [players, position]);
+
+  // ----------------------
+  // MOBILE (POPOVER)
+  // ----------------------
   if (isMobile) {
     return (
       <Popover>
         <PopoverTrigger asChild>{children}</PopoverTrigger>
 
         <PopoverContent
-          className={`
-            bg-transparent border-none shadow-none p-0
-            ${className}
-          `}
+          side="top"
+          className={`bg-transparent border-none shadow-none p-0 ${className}`}
         >
-          {content}
+          <MobileBox pieces={piecesOnBox} position={position} />
         </PopoverContent>
       </Popover>
     );
   }
 
-  // 🔥 DESKTOP → TOOLTIP
+  // ----------------------
+  // DESKTOP (TOOLTIP)
+  // ----------------------
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
 
         <TooltipContent
-          side={side}
-          className={`
-            bg-black/80
-            text-white
-            border border-cyan-400/20
-            backdrop-blur-xl
-            p-2
-            rounded-md
-            shadow-[0_0_15px_rgba(34,211,238,0.2)]
-            ${className}
-          `}
+          side={`${position === 92 ? "top" : position === 24 ? "right" : position === 134 ? "bottom" : "left"}`}
+          className={`bg-transparent border-none shadow-none p-0 ${className}`}
         >
-          {content}
+          <DesktopBox pieces={piecesOnBox} position={position} />
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

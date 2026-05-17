@@ -5,8 +5,11 @@ import {
   FaArrowUp,
   FaStarOfDavid,
 } from "react-icons/fa";
+import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
 
 export const path = Array.from({ length: 225 }, (_, i) => i + 1);
+
+export const destination = [98, 114, 112, 128];
 
 export const borderArray1 = [
   106, 107, 108, 109, 110, 111, 115, 116, 117, 118, 119, 120, 91, 92, 93, 94,
@@ -60,13 +63,13 @@ export const pathOfPlayer1 = [
   92, 93, 94, 95, 96, 82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100, 101,
   102, 103, 104, 105, 120, 135, 134, 133, 132, 131, 130, 144, 159, 174, 189,
   204, 219, 218, 217, 202, 187, 172, 157, 142, 126, 125, 124, 123, 122, 121,
-  106, 107, 108, 109, 110, 111,
+  106, 107, 108, 109, 110, 111, 112,
 ];
 export const pathOfPlayer2 = [
   24, 39, 54, 69, 84, 100, 101, 102, 103, 104, 105, 120, 135, 134, 133, 132,
   131, 130, 144, 159, 174, 189, 204, 219, 218, 217, 202, 187, 172, 157, 142,
   126, 125, 124, 123, 122, 121, 106, 91, 92, 93, 94, 95, 96, 82, 67, 52, 37, 22,
-  7, 8, 23, 38, 53, 68, 83,
+  7, 8, 23, 38, 53, 68, 83, 98,
 ];
 export const pathOfPlayer3 = [
   134, 133, 132, 131, 130, 144, 159, 174, 189, 204, 219, 218, 217, 202, 187,
@@ -78,10 +81,10 @@ export const pathOfPlayer4 = [
   202, 187, 172, 157, 142, 126, 125, 124, 123, 122, 121, 106, 91, 92, 93, 94,
   95, 96, 82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100, 101, 102, 103,
   104, 105, 120, 135, 134, 133, 132, 131, 130, 144, 159, 174, 189, 204, 219,
-  218, 203, 188, 173, 158, 143,
+  218, 203, 188, 173, 158, 143, 128,
 ];
 
-export const endZone = [97, 98, 99, 112, 113, 114, 127, 128, 129];
+export const endZone = [98, 112, 114, 128];
 
 export const safeZone = [24, 92, 134, 202];
 
@@ -126,18 +129,34 @@ export const setBorderAndColor = (path, players) => {
     return "border border-slate-300 h-7 w-7";
   }
 
+  if (path === 112) {
+    return "h-7 w-7 rotate-90";
+  }
+
+  if (path === 114) {
+    return "h-7 w-7 -rotate-90";
+  }
+
+  if (path === 98) {
+    return "h-7 w-7 rotate-180";
+  }
+
   return "h-7 w-7";
 };
 
 const iconArray = [37, 103, 123, 189];
 
-export const setIcon = (path) => {
-  if (iconArray.includes(path)) return <FaStarOfDavid />;
-  if (path === 8) return <FaArrowDown />;
-  if (path === 120) return <FaArrowLeft />;
-  if (path === 106) return <FaArrowRight />;
-  if (path === 218) return <FaArrowUp />;
-  return null;
+export const colorsMap = {
+  "bg-red-500": "red",
+  "bg-blue-500": "blue",
+  "bg-green-500": "green",
+  "bg-yellow-500": "yellow",
+  "bg-purple-500": "purple",
+  "bg-pink-500": "pink",
+  "bg-indigo-500": "indigo",
+  "bg-orange-500": "orange",
+  "bg-teal-500": "teal",
+  "bg-cyan-500": "cyan",
 };
 
 export const colors = [
@@ -153,17 +172,22 @@ export const colors = [
   { id: 10, label: "Cyan", value: "bg-cyan-500" },
 ];
 
-export const colorsMap = {
-  "bg-red-500": "red",
-  "bg-blue-500": "blue",
-  "bg-green-500": "green",
-  "bg-yellow-500": "yellow",
-  "bg-purple-500": "purple",
-  "bg-pink-500": "pink",
-  "bg-indigo-500": "indigo",
-  "bg-orange-500": "orange",
-  "bg-teal-500": "teal",
-  "bg-cyan-500": "cyan",
+export const setIcon = (path, player1, player2, player3, player4) => {
+  if (iconArray.includes(path)) return <FaStarOfDavid />;
+  if (path === 120) return <FaArrowLeft color={colorsMap[player3?.color]} />;
+  if (path === 8) return <FaArrowDown color={colorsMap[player2?.color]} />;
+  if (path === 106) return <FaArrowRight color={colorsMap[player1?.color]} />;
+  if (path === 218) return <FaArrowUp color={colorsMap[player4?.color]} />;
+  return null;
+};
+
+export const diceMap = {
+  1: Dice1,
+  2: Dice2,
+  3: Dice3,
+  4: Dice4,
+  5: Dice5,
+  6: Dice6,
 };
 
 /* ---------------- PLAYER CONFIG ---------------- */
@@ -255,7 +279,7 @@ export const defaultPlayers = [
       92, 93, 94, 95, 96, 82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100,
       101, 102, 103, 104, 105, 120, 135, 134, 133, 132, 131, 130, 144, 159, 174,
       189, 204, 219, 218, 217, 202, 187, 172, 157, 142, 126, 125, 124, 123, 122,
-      121, 106, 107, 108, 109, 110, 111,
+      121, 106, 107, 108, 109, 110, 111, 112,
     ],
   },
   {
@@ -304,7 +328,7 @@ export const defaultPlayers = [
       24, 39, 54, 69, 84, 100, 101, 102, 103, 104, 105, 120, 135, 134, 133, 132,
       131, 130, 144, 159, 174, 189, 204, 219, 218, 217, 202, 187, 172, 157, 142,
       126, 125, 124, 123, 122, 121, 106, 91, 92, 93, 94, 95, 96, 82, 67, 52, 37,
-      22, 7, 8, 23, 38, 53, 68, 83,
+      22, 7, 8, 23, 38, 53, 68, 83, 98,
     ],
   },
   {
@@ -353,7 +377,7 @@ export const defaultPlayers = [
       134, 133, 132, 131, 130, 144, 159, 174, 189, 204, 219, 218, 217, 202, 187,
       172, 157, 142, 126, 125, 124, 123, 122, 121, 106, 91, 92, 93, 94, 95, 96,
       82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100, 101, 102, 103, 104,
-      105, 120, 119, 118, 117, 116, 115,
+      105, 120, 119, 118, 117, 116, 115, 114,
     ],
   },
   {
@@ -402,7 +426,7 @@ export const defaultPlayers = [
       202, 187, 172, 157, 142, 126, 125, 124, 123, 122, 121, 106, 91, 92, 93,
       94, 95, 96, 82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100, 101,
       102, 103, 104, 105, 120, 135, 134, 133, 132, 131, 130, 144, 159, 174, 189,
-      204, 219, 218, 203, 188, 173, 158, 143,
+      204, 219, 218, 203, 188, 173, 158, 143, 128,
     ],
   },
 ];
