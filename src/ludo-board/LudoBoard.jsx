@@ -160,7 +160,9 @@ const LudoBoard = () => {
                   )} ${setBorderAndColor(allPath, players, activePlayer)}`}
                 >
                   <div>
-                    {player1.path.includes(allPath) && (
+                    {players
+                      .find((player) => player.status === activePlayer)
+                      .piece.some((p) => p.currentPosition === allPath) && isRoled && (
                       <Loader className="animate-spin" />
                     )}
                   </div>
@@ -180,33 +182,37 @@ const LudoBoard = () => {
                               handleToggle(player.status, piece.id, allPath);
                             }
                           }}
+                          className="cursor-pointer"
                         />
                       ) : !piece.isHome ? (
                         player?.path?.map((p, index) =>
                           p === allPath && index === piece.stepsMoved ? (
-                            <MapPin
-                              key={`${player.status}-${piece.id}-${index}`}
-                              size={destination.includes(p) ? 10 : 20}
-                              color={
-                                destination.includes(p)
-                                  ? "white"
-                                  : colorsMap[player.color]
-                              }
-                              onClick={() => {
-                                if (
-                                  activePlayer === player.status &&
-                                  isRoled &&
-                                  !safeZone.includes(p) &&
-                                  !endZone.includes(p)
-                                ) {
-                                  handleIncreacseStep(
-                                    player.status,
-                                    piece.id,
-                                    nextTurn,
-                                  );
+                            <div className="absolute z-10">
+                              <MapPin
+                                key={`${player.status}-${piece.id}-${index}`}
+                                size={destination.includes(p) ? 10 : 20}
+                                color={
+                                  destination.includes(p)
+                                    ? "white"
+                                    : colorsMap[player.color]
                                 }
-                              }}
-                            />
+                                onClick={() => {
+                                  if (
+                                    activePlayer === player.status &&
+                                    isRoled &&
+                                    !safeZone.includes(p) &&
+                                    !endZone.includes(p)
+                                  ) {
+                                    handleIncreacseStep(
+                                      player.status,
+                                      piece.id,
+                                      nextTurn,
+                                    );
+                                  }
+                                }}
+                                className="cursor-pointer"
+                              />
+                            </div>
                           ) : null,
                         )
                       ) : null,
