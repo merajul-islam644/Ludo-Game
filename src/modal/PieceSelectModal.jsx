@@ -4,7 +4,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { pieceOfHome1, pieceOfHome2, pieceOfHome3, pieceOfHome4 } from "@/constant/constant";
+import {
+  pieceOfHome1,
+  pieceOfHome2,
+  pieceOfHome3,
+  pieceOfHome4,
+} from "@/constant/homeAreas.constants";
 import { gameContext } from "@/constext/GameContext";
 import { cn } from "@/lib/utils";
 import { Circle } from "lucide-react";
@@ -17,7 +22,7 @@ const createPieces = (count, startPositions) => {
     isActive: false,
     isHome: true,
     stepsMoved: 0,
-    currentPosition : null
+    currentPosition: null,
   }));
 };
 
@@ -28,24 +33,24 @@ const homeMap = {
   "player-4": pieceOfHome4,
 };
 
-const PieceSelectModal = ({ onClose, confirm, title, content}) => {
+const PieceSelectModal = ({ onClose, confirm, title, content }) => {
   const { players, setPlayers } = useContext(gameContext);
-  
-    const handlePieceChange = (value) => {
-      const count = Number(value);
-  
-      const updatedPlayers = players.map((player) => {
-        const actualPosition = homeMap[player.status] || [];
-  
-        return {
-          ...player,
-          piece: createPieces(count, actualPosition),
-        };
-      });
-  
-      setPlayers(updatedPlayers);
-    };
-    
+
+  const handlePieceChange = (value) => {
+    const count = Number(value);
+
+    const updatedPlayers = players.map((player) => {
+      const actualPosition = homeMap[player.status] || [];
+
+      return {
+        ...player,
+        piece: createPieces(count, actualPosition),
+      };
+    });
+
+    setPlayers(updatedPlayers);
+  };
+
   return (
     <DialogContent
       className="
@@ -79,7 +84,8 @@ const PieceSelectModal = ({ onClose, confirm, title, content}) => {
             <button
               key={num}
               onClick={() => handlePieceChange(num)}
-              className={cn(`
+              className={cn(
+                `
                   aspect-square w-full
                   flex flex-col items-center justify-center cursor-pointer
                   rounded-xl
@@ -89,7 +95,10 @@ const PieceSelectModal = ({ onClose, confirm, title, content}) => {
                   hover:bg-cyan-500/10
                   hover:border-cyan-400/40
                   transition-all duration-300
-                `,players[0].piece.length === num && "border-cyan-400/40 bg-cyan-500/10", )}
+                `,
+                players[0].piece.length === num &&
+                  "border-cyan-400/40 bg-cyan-500/10",
+              )}
             >
               {/* Circles */}
               <div className="flex items-center">

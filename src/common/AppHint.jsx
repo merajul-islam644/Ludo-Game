@@ -13,8 +13,8 @@ import {
 
 import { useContext, useEffect, useMemo, useState } from "react";
 import { MapPin } from "lucide-react";
-import { colorsMap } from "@/constant/constant";
 import { gameContext } from "@/constext/GameContext";
+import { colorsMap } from "@/constant/ui.constants";
 
 const DesktopBox = ({ pieces }) => {
   const { handleIncreacseStep, nextTurn } = useContext(gameContext);

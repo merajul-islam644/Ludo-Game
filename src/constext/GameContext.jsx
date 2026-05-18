@@ -1,14 +1,15 @@
+import { endZone, safeZone } from "@/constant/boardPaths.constants";
 import {
   defaultPlayers,
   defaultValues,
-  endZone,
+  PLAYER_CONFIG,
+} from "@/constant/player.constants";
+import {
   pathOfPlayer1,
   pathOfPlayer2,
   pathOfPlayer3,
   pathOfPlayer4,
-  PLAYER_CONFIG,
-  safeZone,
-} from "@/constant/constant";
+} from "@/constant/playerPaths.constants";
 import { createContext, useCallback, useEffect, useState } from "react";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -49,10 +50,6 @@ export const GameContext = ({ children }) => {
   const winningStatus = players
     ?.find((player) => player?.status === activePlayer)
     ?.piece?.every((p) => endZone.includes(p?.currentPosition));
-
-  const checkingPathLength = players
-    .find((player) => player.status === activePlayer)
-    ?.piece.map((p) => p.stepsMoved);
 
   useEffect(() => {
     function name() {
@@ -100,38 +97,94 @@ export const GameContext = ({ children }) => {
     setPlayers(newPlayers);
   };
 
+  // const handleToggle = (playerStatus, id) => {
+  //   setIsRoled(false);
+  //   setPlayers((prev) =>
+  //     prev.map((player) => {
+  //       if (player.status !== playerStatus) return player;
+  //       let startPosition = null;
+
+  //       if (player.status === "player-1") {
+  //         startPosition = pathOfPlayer1[0];
+  //       } else if (player.status === "player-2") {
+  //         startPosition = pathOfPlayer2[0];
+  //       } else if (player.status === "player-3") {
+  //         startPosition = pathOfPlayer3[0];
+  //       } else if (player.status === "player-4") {
+  //         startPosition = pathOfPlayer4[0];
+  //       }
+
+  //       return {
+  //         ...player,
+  //         piece: player.piece.map((piece) =>
+  //           piece.id === id && diceValue === 6
+  //             ? {
+  //                 ...piece,
+  //                 isHome: false,
+  //                 stepsMoved: 0,
+  //                 currentPosition: startPosition,
+  //               }
+  //             : piece,
+  //         ),
+  //       };
+  //     }),
+  //   );
+  // };
+
   const handleToggle = (playerStatus, id) => {
     setIsRoled(false);
+
+    let startPosition = null;
+
+    if (playerStatus === "player-1") {
+      startPosition = pathOfPlayer1[0];
+    } else if (playerStatus === "player-2") {
+      startPosition = pathOfPlayer2[0];
+    } else if (playerStatus === "player-3") {
+      startPosition = pathOfPlayer3[0];
+    } else if (playerStatus === "player-4") {
+      startPosition = pathOfPlayer4[0];
+    }
+
+    // STEP 1: trigger animation state
     setPlayers((prev) =>
       prev.map((player) => {
         if (player.status !== playerStatus) return player;
-        let startPosition = null;
-
-        if (player.status === "player-1") {
-          startPosition = pathOfPlayer1[0];
-        } else if (player.status === "player-2") {
-          startPosition = pathOfPlayer2[0];
-        } else if (player.status === "player-3") {
-          startPosition = pathOfPlayer3[0];
-        } else if (player.status === "player-4") {
-          startPosition = pathOfPlayer4[0];
-        }
 
         return {
           ...player,
           piece: player.piece.map((piece) =>
             piece.id === id && diceValue === 6
-              ? {
-                  ...piece,
-                  isHome: false,
-                  stepsMoved: 0,
-                  currentPosition: startPosition,
-                }
+              ? { ...piece, moving: true }
               : piece,
           ),
         };
       }),
     );
+
+    // STEP 2: actual move
+    setTimeout(() => {
+      setPlayers((prev) =>
+        prev.map((player) => {
+          if (player.status !== playerStatus) return player;
+
+          return {
+            ...player,
+            piece: player.piece.map((piece) =>
+              piece.id === id && diceValue === 6
+                ? {
+                    ...piece,
+                    isHome: false,
+                    stepsMoved: 0,
+                    currentPosition: startPosition,
+                    moving: false,
+                  }
+                : piece,
+            ),
+          };
+        }),
+      );
+    }, 200);
   };
 
   const sendPieceBackOnPath = (playerStatus, pieceId, startSteps) => {
@@ -261,7 +314,7 @@ export const GameContext = ({ children }) => {
           nextTurn();
         }
       }
-    }, 300);
+    }, 400);
 
     setIsRoled(false);
   };

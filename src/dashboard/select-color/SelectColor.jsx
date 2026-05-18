@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { colors } from "@/constant/constant";
+import { colors } from "@/constant/ui.constants";
 import { gameContext } from "@/constext/GameContext";
 import { useContext } from "react";
 

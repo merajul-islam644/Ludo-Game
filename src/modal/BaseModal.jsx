@@ -5,8 +5,8 @@ import ConfirmationModal from "./ConfirmationModal";
 import ColorSelectModal from "./ColorSelectModal";
 import PlayerSelectModal from "./PlayerSelectModal";
 import PieceSelectModal from "./PieceSelectModal";
-import { defaultPlayers } from "@/constant/constant";
 import { useNavigate } from "react-router-dom";
+import { defaultPlayers } from "@/constant/player.constants";
 
 const BaseModal = () => {
   const {
