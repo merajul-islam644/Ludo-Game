@@ -47,8 +47,8 @@ export const GameContext = ({ children }) => {
   }, [players.length]);
 
   const winningStatus = players
-    .find((player) => player.status === activePlayer)
-    .piece.every((p) => endZone.includes(p.currentPosition));
+    ?.find((player) => player?.status === activePlayer)
+    ?.piece?.every((p) => endZone.includes(p?.currentPosition));
 
   const checkingPathLength = players
     .find((player) => player.status === activePlayer)

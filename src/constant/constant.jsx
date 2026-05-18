@@ -3,7 +3,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaArrowUp,
-  FaStarOfDavid,
+  FaRegStar,
 } from "react-icons/fa";
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
 
@@ -96,7 +96,9 @@ export const setActiveHomePulse = (path, players, activePlayer) => {
   const isHomeCell = activePlayerData?.homeArea?.includes(path);
   const isExcluded = borderArray3.includes(path);
 
-  return isHomeCell && !isExcluded ? "animate-pulse" : "";
+  return isHomeCell && !isExcluded
+    ? "animate-[pulse_0.5s_infinite] transition-all duration-300 scale-110"
+    : "";
 };
 
 export const setBorderAndColor = (path, players) => {
@@ -173,7 +175,7 @@ export const colors = [
 ];
 
 export const setIcon = (path, player1, player2, player3, player4) => {
-  if (iconArray.includes(path)) return <FaStarOfDavid />;
+  if (iconArray.includes(path)) return <FaRegStar size={22} />;
   if (path === 120) return <FaArrowLeft color={colorsMap[player3?.color]} />;
   if (path === 8) return <FaArrowDown color={colorsMap[player2?.color]} />;
   if (path === 106) return <FaArrowRight color={colorsMap[player1?.color]} />;

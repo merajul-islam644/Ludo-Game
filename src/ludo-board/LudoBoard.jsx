@@ -82,7 +82,7 @@ const LudoBoard = () => {
           <div className="flex justify-between items-center">
             {/* Player 1 */}
             <div
-              className={`flex items-center gap-3 ${activePlayer === player1.status && "animate-pulse"}`}
+              className={`flex items-center gap-3 ${activePlayer === player1.status && "animate-[pulse_0.5s_infinite]"}`}
             >
               <div
                 className={`p-2 rounded-xl bg-white/5 backdrop-blur-sm transition-all duration-300`}
@@ -96,12 +96,24 @@ const LudoBoard = () => {
 
               <div className="flex flex-col gap-3 items-center">
                 <div
-                  className={`p-2 rounded-full`}
+                  className={`p-2 rounded-full relative`}
                   style={{
                     boxShadow: `0 0 12px ${colorsMap[player1?.color]}`,
                   }}
                 >
-                  <MapPin color={colorsMap[player1?.color]} />
+                  <MapPin
+                    size={35}
+                    color="white"
+                    fill="white"
+                    className="cursor-pointer drop-shadow-[2px_2px_2px_rgba(0,0,0,2)]"
+                    style={{
+                      transform: "scale(0.9, 1)",
+                    }}
+                  />
+                  <div
+                    className="absolute top-3 left-4 w-5 h-5 rounded-full border border-slate-500 cursor-pointer"
+                    style={{ backgroundColor: colorsMap[player1.color] }}
+                  />
                 </div>
                 <span className="text-xs font-semibold tracking-wide">
                   Player-1
@@ -109,27 +121,44 @@ const LudoBoard = () => {
               </div>
             </div>
 
-            <div className="flex justify-center items-center animate-bounce">
+            <div className="flex justify-center items-center">
               {activePlayer === player1.status && (
-                <div className="text-3xl">👈</div>
+                <div className="text-3xl animate-[bounceX_0.3s_infinite]">
+                  👈
+                </div>
               )}
-              {activePlayer === player2.status && (
-                <div className="text-3xl">👉</div>
+
+              {activePlayer === player2?.status && (
+                <div className="text-3xl animate-[bounceX_0.3s_infinite]">
+                  👉
+                </div>
               )}
             </div>
 
             {/* Player 2 */}
             <div
-              className={`flex items-center gap-3 ${activePlayer === player2?.status && "animate-pulse"}`}
+              className={`flex items-center gap-3 ${activePlayer === player2?.status && "animate-[pulse_0.5s_infinite]"}`}
             >
               <div className="flex flex-col gap-3 items-center">
                 <div
-                  className={`p-2 rounded-full`}
+                  className={`p-2 rounded-full relative`}
                   style={{
                     boxShadow: `0 0 12px ${colorsMap[player2?.color]}`,
                   }}
                 >
-                  <MapPin color={colorsMap[player2?.color]} />
+                  <MapPin
+                    size={35}
+                    color="white"
+                    fill="white"
+                    className="cursor-pointer drop-shadow-[2px_2px_2px_rgba(0,0,0,2)]"
+                    style={{
+                      transform: "scale(0.9, 1)",
+                    }}
+                  />
+                  <div
+                    className="absolute top-3 left-4 w-5 h-5 rounded-full border border-slate-500 cursor-pointer"
+                    style={{ backgroundColor: colorsMap[player2?.color] }}
+                  />
                 </div>
                 <span className="text-xs font-semibold tracking-wide">
                   Player-2
@@ -143,7 +172,7 @@ const LudoBoard = () => {
                   border: `1px solid ${colorsMap[player2?.color]}`,
                 }}
               >
-                <Dice playerStatus={player2.status} />
+                <Dice playerStatus={player2?.status} />
               </div>
             </div>
           </div>
@@ -153,7 +182,7 @@ const LudoBoard = () => {
 
               const boxUI = (
                 <div
-                  className={`flex justify-center items-center ${setActiveHomePulse(
+                  className={`flex relative justify-center items-center ${setActiveHomePulse(
                     allPath,
                     players,
                     activePlayer,
@@ -162,55 +191,89 @@ const LudoBoard = () => {
                   <div>
                     {players
                       .find((player) => player.status === activePlayer)
-                      .piece.some((p) => p.currentPosition === allPath) && isRoled && (
-                      <Loader className="animate-spin" />
-                    )}
+                      .piece.some(
+                        (p) =>
+                          p.currentPosition === allPath ||
+                          p.position === allPath,
+                      ) &&
+                      isRoled && <Loader className="animate-spin" />}
                   </div>
+                  {players.some((player) =>
+                    player.piece.some(
+                      (p) =>
+                        p.currentPosition === allPath || p.position === allPath,
+                    ),
+                  ) && (
+                    <div
+                      className={`border-3 border-slate-500 h-5 w-5 rounded-full bg-white ${isRoled && "hidden"}`}
+                    />
+                  )}
                   <div className="absolute insert-0 -z-10">
                     {setIcon(allPath, player1, player2, player3, player4)}
                   </div>
                   {/* PIECES */}
                   {players?.map((player) =>
-                    player?.piece?.map((piece) =>
+                    player?.piece?.map((piece, index) =>
                       piece.position === allPath && piece.isHome ? (
-                        <MapPin
-                          size={20}
-                          color={colorsMap[player.color]}
-                          key={`${player.status}-${piece.id}`}
+                        <div
+                          key={`${player.status}-${piece.id}-${index}`}
                           onClick={() => {
                             if (activePlayer === player.status && isRoled) {
                               handleToggle(player.status, piece.id, allPath);
                             }
                           }}
-                          className="cursor-pointer"
-                        />
+                          className="absolute z-10 right-0.5 -top-4.5 w-[30px] h-[30px]"
+                        >
+                          <MapPin
+                            size={35}
+                            color="white"
+                            fill="white"
+                            className="cursor-pointer drop-shadow-[2px_2px_2px_rgba(0,0,0,2)]"
+                            style={{
+                              transform: "scale(0.9, 1)",
+                            }}
+                          />
+
+                          <div
+                            className="absolute top-[2px] left-[7.5px] w-5 h-5 rounded-full border border-slate-500 cursor-pointer"
+                            style={{ backgroundColor: colorsMap[player.color] }}
+                          />
+                        </div>
                       ) : !piece.isHome ? (
                         player?.path?.map((p, index) =>
                           p === allPath && index === piece.stepsMoved ? (
-                            <div className="absolute z-10">
-                              <MapPin
-                                key={`${player.status}-${piece.id}-${index}`}
-                                size={destination.includes(p) ? 10 : 20}
-                                color={
-                                  destination.includes(p)
-                                    ? "white"
-                                    : colorsMap[player.color]
+                            <div
+                              key={`${player.status}-${piece.id}-${index}`}
+                              onClick={() => {
+                                if (
+                                  activePlayer === player.status &&
+                                  isRoled &&
+                                  !safeZone.includes(p) &&
+                                  !endZone.includes(p)
+                                ) {
+                                  handleIncreacseStep(
+                                    player.status,
+                                    piece.id,
+                                    nextTurn,
+                                  );
                                 }
-                                onClick={() => {
-                                  if (
-                                    activePlayer === player.status &&
-                                    isRoled &&
-                                    !safeZone.includes(p) &&
-                                    !endZone.includes(p)
-                                  ) {
-                                    handleIncreacseStep(
-                                      player.status,
-                                      piece.id,
-                                      nextTurn,
-                                    );
-                                  }
+                              }}
+                              className="absolute z-10 right-0.5 -top-4.5 w-[30px] h-[30px] cursor-pointer"
+                            >
+                              <MapPin
+                                size={35}
+                                color="white"
+                                fill="white"
+                                className="cursor-pointer drop-shadow-[2px_2px_2px_rgba(0,0,0,2)]"
+                                style={{
+                                  transform: "scale(0.9, 1)",
                                 }}
-                                className="cursor-pointer"
+                              />
+                              <div
+                                className="absolute top-[2px] left-[7.5px] w-5 h-5 rounded-full border border-slate-500"
+                                style={{
+                                  backgroundColor: colorsMap[player.color],
+                                }}
                               />
                             </div>
                           ) : null,
@@ -243,7 +306,7 @@ const LudoBoard = () => {
           <div className="flex justify-between items-center">
             {/* Player 4 */}
             <div
-              className={`flex items-center gap-3 ${activePlayer === player4?.status && "animate-pulse"}`}
+              className={`flex items-center gap-3 ${activePlayer === player4?.status && "animate-[pulse_0.5s_infinite]"}`}
             >
               <div
                 className="p-2 rounded-xl bg-white/5 backdrop-blur-sm transition-all duration-300"
@@ -252,7 +315,7 @@ const LudoBoard = () => {
                   border: `1px solid ${colorsMap[player4?.color]}`,
                 }}
               >
-                <Dice playerStatus={player4.status} />
+                <Dice playerStatus={player4?.status} />
               </div>
 
               <div className="flex flex-col gap-3 items-center">
@@ -261,28 +324,45 @@ const LudoBoard = () => {
                 </span>
 
                 <div
-                  className="p-2 rounded-full"
+                  className="p-2 rounded-full relative"
                   style={{
                     boxShadow: `0 0 12px ${colorsMap[player4?.color]}`,
                   }}
                 >
-                  <MapPin color={colorsMap[player4?.color]} />
+                  <MapPin
+                    size={35}
+                    color="white"
+                    fill="white"
+                    className="cursor-pointer drop-shadow-[2px_2px_2px_rgba(0,0,0,2)]"
+                    style={{
+                      transform: "scale(0.9, 1)",
+                    }}
+                  />
+                  <div
+                    className="absolute top-3 left-4 w-5 h-5 rounded-full border border-slate-500 cursor-pointer"
+                    style={{ backgroundColor: colorsMap[player4?.color] }}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-center items-center animate-bounce">
-              {activePlayer === player3.status && (
-                <div className="text-3xl">👉</div>
+            <div className="flex justify-center items-center">
+              {activePlayer === player4?.status && (
+                <div className="text-3xl animate-[bounceX_0.3s_infinite]">
+                  👈
+                </div>
               )}
-              {activePlayer === player4.status && (
-                <div className="text-3xl">👈</div>
+
+              {activePlayer === player3.status && (
+                <div className="text-3xl animate-[bounceX_0.3s_infinite]">
+                  👉
+                </div>
               )}
             </div>
 
             {/* Player 3 */}
             <div
-              className={`flex items-center gap-3 ${activePlayer === player3.status && "animate-pulse"}`}
+              className={`flex items-center gap-3 ${activePlayer === player3.status && "animate-[pulse_0.5s_infinite]"}`}
             >
               <div className="flex flex-col gap-3 items-center">
                 <span className="text-xs font-semibold tracking-wide">
@@ -290,12 +370,24 @@ const LudoBoard = () => {
                 </span>
 
                 <div
-                  className="p-2 rounded-full"
+                  className="p-2 rounded-full relative"
                   style={{
                     boxShadow: `0 0 12px ${colorsMap[player3?.color]}`,
                   }}
                 >
-                  <MapPin color={colorsMap[player3?.color]} />
+                  <MapPin
+                    size={35}
+                    color="white"
+                    fill="white"
+                    className="cursor-pointer drop-shadow-[2px_2px_2px_rgba(0,0,0,2)]"
+                    style={{
+                      transform: "scale(0.9, 1)",
+                    }}
+                  />
+                  <div
+                    className="absolute top-3 left-4 w-5 h-5 rounded-full border border-slate-500 cursor-pointer"
+                    style={{ backgroundColor: colorsMap[player3.color] }}
+                  />
                 </div>
               </div>
 
