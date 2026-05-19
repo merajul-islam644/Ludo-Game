@@ -4,13 +4,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
+import { useInitializePlayers } from "@/hooks/useInitializePlayers";
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
 import { useContext } from "react";
 
 const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
-  const { handleSetPlayers, players } = useContext(gameContext);
+  const { players } = useContext(gameContext);
+  const { initializePlayers } = useInitializePlayers();
   return (
     <DialogContent
       className="
@@ -43,7 +45,7 @@ const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
           {content.map((num) => (
             <button
               key={num}
-              onClick={() => handleSetPlayers(num)}
+              onClick={() => initializePlayers(num)}
               className={cn(
                 `
     aspect-square w-full

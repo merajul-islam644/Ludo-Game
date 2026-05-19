@@ -10,7 +10,7 @@ import {
   pieceOfHome3,
   pieceOfHome4,
 } from "@/constant/homeAreas.constants";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 import { cn } from "@/lib/utils";
 import { Circle } from "lucide-react";
 import { useContext } from "react";

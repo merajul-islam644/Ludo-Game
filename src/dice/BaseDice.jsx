@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 import { diceMap } from "@/constant/ui.constants";
 
 function BaseDice({ playerStatus }) {
@@ -13,9 +13,12 @@ function BaseDice({ playerStatus }) {
     nextTurn,
   } = useContext(gameContext);
 
-  const allPieceIsInsideHome = players
-    .find((player) => activePlayer === player.status)
-    .piece.every((piece) => piece.isHome);
+  const currentPlayer = players.find(
+    (player) => activePlayer === player.status,
+  );
+
+  const allPieceIsInsideHome =
+    currentPlayer?.piece?.every((piece) => piece.isHome) ?? false;
 
   const [isRolling, setIsRolling] = useState(false);
 

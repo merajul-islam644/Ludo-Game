@@ -6,7 +6,7 @@ const CellPieceIndicator = ({ activePlayer, players, isRoled, allPath }) => {
       <div>
         {players
           .find((player) => player.status === activePlayer)
-          .piece.some(
+          ?.piece?.some(
             (p) => p.currentPosition === allPath || p.position === allPath,
           ) &&
           isRoled && <Loader className="animate-spin" />}

@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { colors } from "@/constant/ui.constants";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 import { useContext } from "react";
 
 export function SelectColor({ player }) {

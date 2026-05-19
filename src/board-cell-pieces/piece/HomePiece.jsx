@@ -1,19 +1,19 @@
 import { colorsMap } from "@/constant/ui.constants";
+import { useActivatePiece } from "@/hooks/useActivatePiece";
 import { MapPin } from "lucide-react";
 
-const HomePiece = ({
-  player,
-  piece,
-  activePlayer,
-  isRoled,
-  handleToggle,
-  allPath,
-}) => {
+const HomePiece = ({ player, piece, activePlayer, isRoled, allPath }) => {
+  const { activatePiece } = useActivatePiece();
   return (
     <div
       onClick={() => {
         if (activePlayer === player.status && isRoled) {
-          handleToggle(player.status, piece.id, allPath);
+          activatePiece(
+            player.status,
+            piece.id,
+            allPath,
+            player.currentPosition,
+          );
         }
       }}
       className="absolute z-10 right-0.5 -top-4.5 w-[30px] h-[30px]"

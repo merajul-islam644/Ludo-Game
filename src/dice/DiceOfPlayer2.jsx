@@ -1,4 +1,4 @@
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 import { MapPin } from "lucide-react";
 import { useContext } from "react";
 import BaseDice from "./BaseDice";

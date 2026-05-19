@@ -6,8 +6,8 @@ import {
 } from "@/components/ui/dialog";
 
 import { useContext } from "react";
-import { gameContext } from "@/constext/GameContext";
-import { SelectColor } from "@/dashboard/select-color/SelectColor";
+import { gameContext } from "@/context/GameContext";
+import { SelectColor } from "@/select-color/SelectColor";
 
 const ColorSelectModal = ({ onClose, confirm }) => {
   const { players } = useContext(gameContext);

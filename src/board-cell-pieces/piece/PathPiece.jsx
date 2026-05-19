@@ -1,16 +1,10 @@
 import { endZone, safeZone } from "@/constant/boardPaths.constants";
 import { colorsMap } from "@/constant/ui.constants";
+import { useMovePiece } from "@/hooks/useMovePiece";
 import { MapPin } from "lucide-react";
 
-const PathPiece = ({
-  player,
-  piece,
-  activePlayer,
-  isRoled,
-  handleIncreacseStep,
-  allPath,
-  nextTurn,
-}) => {
+const PathPiece = ({ player, piece, activePlayer, isRoled, allPath }) => {
+  const { movePiece } = useMovePiece();
   return player?.path?.map((p, index) =>
     p === allPath && index === piece.stepsMoved ? (
       <div
@@ -22,7 +16,7 @@ const PathPiece = ({
             !safeZone.includes(p) &&
             !endZone.includes(p)
           ) {
-            handleIncreacseStep(player.status, piece.id, nextTurn);
+            movePiece(player.status, piece.id);
           }
         }}
         className="absolute z-10 right-0.5 -top-4.5 w-[30px] h-[30px] cursor-pointer"

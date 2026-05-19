@@ -13,11 +13,13 @@ import {
 
 import { useContext, useEffect, useMemo, useState } from "react";
 import { MapPin } from "lucide-react";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 import { colorsMap } from "@/constant/ui.constants";
+import { useMovePiece } from "@/hooks/useMovePiece";
 
 const DesktopBox = ({ pieces }) => {
-  const { handleIncreacseStep, nextTurn } = useContext(gameContext);
+  const { nextTurn } = useContext(gameContext);
+  const { movePiece } = useMovePiece();
   return (
     <div className="rounded-2xl border border-cyan-400/20 bg-black/70 p-4 backdrop-blur-md shadow-[0_0_25px_rgba(34,211,238,0.08)]">
       {/* Header */}
@@ -32,9 +34,7 @@ const DesktopBox = ({ pieces }) => {
         <div className="grid grid-cols-3 gap-2">
           {pieces.map((piece) => (
             <button
-              onClick={() =>
-                handleIncreacseStep(piece.playerStatus, piece.id, nextTurn)
-              }
+              onClick={() => movePiece(piece.playerStatus, piece.id, nextTurn)}
               key={`${piece.playerStatus}-${piece.id}`}
               className="
             group relative flex h-7 w-7 items-center justify-center
@@ -71,7 +71,8 @@ const DesktopBox = ({ pieces }) => {
 };
 
 const MobileBox = ({ pieces }) => {
-  const { handleIncreacseStep, nextTurn } = useContext(gameContext);
+  const { nextTurn } = useContext(gameContext);
+  const { movePiece } = useMovePiece();
   return (
     <div className="w-32 rounded-xl border border-cyan-400/20 bg-black/80 p-2 backdrop-blur-xl shadow-[0_0_20px_rgba(34,211,238,0.06)]">
       {/* Header */}
@@ -86,9 +87,7 @@ const MobileBox = ({ pieces }) => {
         <div className="grid grid-cols-3 gap-1.5">
           {pieces.map((piece) => (
             <button
-              onClick={() =>
-                handleIncreacseStep(piece.playerStatus, piece.id, nextTurn)
-              }
+              onClick={() => movePiece(piece.playerStatus, piece.id, nextTurn)}
               key={`${piece.playerStatus}-${piece.id}`}
               className="
                 group relative flex h-6 items-center justify-center

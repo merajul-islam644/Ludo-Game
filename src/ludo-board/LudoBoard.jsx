@@ -10,7 +10,7 @@ import {
   setBorderAndColor,
   setIcon,
 } from "@/constant/ui.constants";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 import DiceOfPlayer1 from "@/dice/DiceOfPlayer1";
 import DiceOfPlayer2 from "@/dice/DiceOfPlayer2";
 import DiceOfPlayer3 from "@/dice/DiceOfPlayer3";
@@ -23,8 +23,7 @@ const LudoBoard = () => {
     players,
     handleToggle,
     handleIncreacseStep,
-    setIsOpenModal,
-    setModalType,
+    dispatch,
     isRoled,
     player1,
     player2,
@@ -40,9 +39,12 @@ const LudoBoard = () => {
         <div>
           <div className="flex justify-center items-center">
             <Button
-              onClick={() => {
-                (setModalType("Quite"), setIsOpenModal(true));
-              }}
+              onClick={() =>
+                dispatch({
+                  type: "OPEN_MODAL",
+                  payload: "QUIT",
+                })
+              }
               variant="destructive"
               className="cursor-pointer"
             >

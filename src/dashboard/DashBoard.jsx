@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useContext, useEffect, useState } from "react";
-import { gameContext } from "@/constext/GameContext";
+import { gameContext } from "@/context/GameContext";
 
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const DashBoard = () => {
-  const { setIsOpenModal, setModalType } = useContext(gameContext);
+  const { dispatch } = useContext(gameContext);
 
   const [user, setUser] = useState(null);
   console.log(user);
@@ -84,9 +84,9 @@ const DashBoard = () => {
             {/* BUTTONS */}
             <div className="space-y-4">
               <Button
-                onClick={() => {
-                  (setIsOpenModal(true), setModalType("Player Select"));
-                }}
+                onClick={() =>
+                  dispatch({ type: "OPEN_MODAL", payload: "SELECT_PLAYER" })
+                }
                 className="
     w-full h-14 rounded-2xl text-lg font-bold cursor-pointer border-none
     bg-linear-to-r from-violet-500 via-fuchsia-500 to-purple-600
@@ -98,9 +98,9 @@ const DashBoard = () => {
               </Button>
 
               <Button
-                onClick={() => {
-                  (setIsOpenModal(true), setModalType("Piece Select"));
-                }}
+                onClick={() =>
+                  dispatch({ type: "OPEN_MODAL", payload: "SELECT_PIECE" })
+                }
                 className="
     w-full h-14 rounded-2xl text-lg font-bold cursor-pointer border-none
     bg-linear-to-r from-emerald-400 via-green-500 to-lime-500
@@ -112,9 +112,9 @@ const DashBoard = () => {
               </Button>
 
               <Button
-                onClick={() => {
-                  (setIsOpenModal(true), setModalType("Color Select"));
-                }}
+                onClick={() =>
+                  dispatch({ type: "OPEN_MODAL", payload: "SELECT_COLOR" })
+                }
                 className="
     w-full h-14 rounded-2xl text-lg font-bold cursor-pointer border-none
     bg-linear-to-r from-orange-400 via-pink-500 to-yellow-400
