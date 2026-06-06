@@ -319,6 +319,22 @@ const GameContextProvider = ({ children }) => {
   }, []);
 
   // -----------------------------
+  // FIREBASE LISTENER - DICEVALUE
+  // -----------------------------
+  useEffect(() => {
+    const diceRef = ref(database, "diceValue");
+
+    const unsubDice = onValue(diceRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data !== null) {
+        setDiceValue(data);
+      }
+    });
+
+    return () => unsubDice();
+  }, []);
+
+  // -----------------------------
   // SYNC PLAYERS → FIREBASE
   // -----------------------------
   useEffect(() => {
@@ -340,6 +356,13 @@ const GameContextProvider = ({ children }) => {
   useEffect(() => {
     playersRefLatest.current = players;
   }, [players]);
+
+  // -----------------------------
+  // SYNC CURRENT PLAYERS DICEVALUE → FIREBASE
+  // -----------------------------
+  useEffect(() => {
+    set(ref(database, "diceValue"), diceValue);
+  }, [diceValue]);
 
   // -----------------------------
   // NEXT TURN (FIXED)
