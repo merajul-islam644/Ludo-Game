@@ -1,0 +1,280 @@
+import {
+  homeAreaPlayer1,
+  homeAreaPlayer2,
+  homeAreaPlayer3,
+  homeAreaPlayer4,
+  pieceOfHome1,
+  pieceOfHome2,
+  pieceOfHome3,
+  pieceOfHome4,
+} from "./homeAreas.constants";
+import {
+  pathOfPlayer1,
+  pathOfPlayer2,
+  pathOfPlayer3,
+  pathOfPlayer4,
+} from "./playerPaths.constants";
+
+export const homeArray = {
+  1: homeAreaPlayer1,
+  2: homeAreaPlayer2,
+  3: homeAreaPlayer3,
+  4: homeAreaPlayer4,
+};
+
+export const pathArray = {
+  1: pathOfPlayer1,
+  2: pathOfPlayer2,
+  3: pathOfPlayer3,
+  4: pathOfPlayer4,
+};
+
+export const colorsArray = {
+  1: "bg-red-500",
+  2: "bg-green-500",
+  3: "bg-yellow-500",
+  4: "bg-cyan-500",
+};
+
+export const PLAYER_CONFIG = {
+  1: {
+    color: "bg-red-500",
+    homeArea: homeAreaPlayer1,
+    piecePositions: pieceOfHome1,
+    path: pathOfPlayer1,
+    startPosition: 16,
+  },
+  2: {
+    color: "bg-green-500",
+    homeArea: homeAreaPlayer2,
+    piecePositions: pieceOfHome2,
+    path: pathOfPlayer2,
+    startPosition: 25,
+  },
+  3: {
+    color: "bg-purple-500",
+    homeArea: homeAreaPlayer3,
+    piecePositions: pieceOfHome3,
+    path: pathOfPlayer3,
+    startPosition: 134,
+  },
+  4: {
+    color: "bg-cyan-500",
+    homeArea: homeAreaPlayer4,
+    piecePositions: pieceOfHome4,
+    path: pathOfPlayer4,
+    startPosition: 202,
+  },
+};
+
+export const defaultValues = {
+  id: 0,
+  status: "",
+  color: "",
+  piece: [],
+  homeArea: [],
+  path: [],
+};
+
+export const defaultPlayers = [
+  {
+    id: 1,
+    status: "player-1",
+    color: "bg-red-500",
+    winningStatus: null,
+    piece: [
+      {
+        id: 1,
+        position: 62,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 62,
+      },
+      {
+        id: 2,
+        position: 20,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 20,
+      },
+      {
+        id: 3,
+        position: 17,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 17,
+      },
+      {
+        id: 4,
+        position: 65,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 65,
+      },
+    ],
+    homeArea: [
+      1, 2, 3, 4, 5, 6, 16, 21, 31, 36, 46, 51, 61, 66, 76, 77, 78, 79, 80, 81,
+      92, 107, 108, 109, 110, 111, 92, 107, 108, 109, 110, 111,
+    ],
+    path: [
+      92, 93, 94, 95, 96, 82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100,
+      101, 102, 103, 104, 105, 120, 135, 134, 133, 132, 131, 130, 144, 159, 174,
+      189, 204, 219, 218, 217, 202, 187, 172, 157, 142, 126, 125, 124, 123, 122,
+      121, 106, 107, 108, 109, 110, 111, 112,
+    ],
+  },
+  {
+    id: 2,
+    status: "player-2",
+    color: "bg-green-500",
+    winningStatus: null,
+    piece: [
+      {
+        id: 1,
+        position: 26,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 26,
+      },
+      {
+        id: 2,
+        position: 74,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 74,
+      },
+      {
+        id: 3,
+        position: 29,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 29,
+      },
+      {
+        id: 4,
+        position: 71,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 71,
+      },
+    ],
+    homeArea: [
+      10, 11, 12, 13, 14, 15, 25, 30, 40, 45, 55, 60, 70, 75, 85, 86, 87, 88,
+      89, 90, 23, 24, 38, 53, 68, 83,
+    ],
+    path: [
+      24, 39, 54, 69, 84, 100, 101, 102, 103, 104, 105, 120, 135, 134, 133, 132,
+      131, 130, 144, 159, 174, 189, 204, 219, 218, 217, 202, 187, 172, 157, 142,
+      126, 125, 124, 123, 122, 121, 106, 91, 92, 93, 94, 95, 96, 82, 67, 52, 37,
+      22, 7, 8, 23, 38, 53, 68, 83, 98,
+    ],
+  },
+  {
+    id: 3,
+    status: "player-3",
+    color: "bg-yellow-500",
+    winningStatus: null,
+    piece: [
+      {
+        id: 1,
+        position: 164,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 164,
+      },
+      {
+        id: 2,
+        position: 206,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 206,
+      },
+      {
+        id: 3,
+        position: 161,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 161,
+      },
+      {
+        id: 4,
+        position: 209,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 209,
+      },
+    ],
+    homeArea: [
+      115, 116, 117, 118, 119, 134, 145, 146, 147, 148, 149, 150, 160, 165, 175,
+      180, 190, 195, 205, 210, 220, 221, 222, 223, 224, 225,
+    ],
+    path: [
+      134, 133, 132, 131, 130, 144, 159, 174, 189, 204, 219, 218, 217, 202, 187,
+      172, 157, 142, 126, 125, 124, 123, 122, 121, 106, 91, 92, 93, 94, 95, 96,
+      82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100, 101, 102, 103, 104,
+      105, 120, 119, 118, 117, 116, 115, 114,
+    ],
+  },
+  {
+    id: 4,
+    status: "player-4",
+    color: "bg-cyan-500",
+    winningStatus: null,
+    piece: [
+      {
+        id: 1,
+        position: 152,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 152,
+      },
+      {
+        id: 2,
+        position: 200,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 200,
+      },
+      {
+        id: 3,
+        position: 155,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 155,
+      },
+      {
+        id: 4,
+        position: 197,
+        isActive: false,
+        isHome: true,
+        stepsMoved: 0,
+        currentPosition: 197,
+      },
+    ],
+    homeArea: [
+      136, 137, 138, 139, 140, 141, 143, 158, 173, 188, 151, 156, 166, 171, 181,
+      186, 196, 201, 202, 203, 211, 212, 213, 214, 215, 216,
+    ],
+    path: [
+      202, 187, 172, 157, 142, 126, 125, 124, 123, 122, 121, 106, 91, 92, 93,
+      94, 95, 96, 82, 67, 52, 37, 22, 7, 8, 9, 24, 39, 54, 69, 84, 100, 101,
+      102, 103, 104, 105, 120, 135, 134, 133, 132, 131, 130, 144, 159, 174, 189,
+      204, 219, 218, 203, 188, 173, 158, 143, 128,
+    ],
+  },
+];

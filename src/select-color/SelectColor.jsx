@@ -5,8 +5,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { colors } from "@/constant/ui.constants";
-import { gameContext } from "@/context/GameContext";
+import { colors } from "@/constants/constants";
+import { gameContext } from "@/context/GameContextProvider";
 import { useContext } from "react";
 
 export function SelectColor({ player }) {
@@ -91,7 +91,7 @@ export function SelectColor({ player }) {
                   className={`h-3 w-3 rounded-full ${item.value} shadow-[0_0_10px_rgba(255,255,255,0.5)]`}
                 />
                 <span>
-                  {player.status.toUpperCase()} - {item.label}
+                  {player.status} - {item.label}
                 </span>
               </div>
             </SelectItem>

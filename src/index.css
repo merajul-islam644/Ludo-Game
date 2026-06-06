@@ -138,3 +138,54 @@
     transform: translateX(10px);
   }
 }
+
+.ludo-dice {
+  animation: dice-roll 0.8s ease-in-out;
+}
+
+@keyframes dice-roll {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  20% {
+    transform: rotate(180deg) scale(1.2);
+  }
+
+  40% {
+    transform: rotate(360deg) scale(0.9);
+  }
+
+  60% {
+    transform: rotate(540deg) scale(1.15);
+  }
+
+  80% {
+    transform: rotate(720deg) scale(0.95);
+  }
+
+  100% {
+    transform: rotate(900deg) scale(1);
+  }
+}
+
+@keyframes kingPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-king-pulse {
+  animation: kingPulse 2s ease-in-out infinite;
+  animation-delay: 1s; /* 👈 starts after a few milliseconds */
+}
+
+.moveStep {
+  transition: transform 1s linear;
+}

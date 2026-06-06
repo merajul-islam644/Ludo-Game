@@ -4,15 +4,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { gameContext } from "@/context/GameContext";
-import { useInitializePlayers } from "@/hooks/useInitializePlayers";
+import { gameContext } from "@/context/GameContextProvider";
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
 import { useContext } from "react";
 
-const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
-  const { players } = useContext(gameContext);
-  const { initializePlayers } = useInitializePlayers();
+const PlayerSelectModal = ({ onClose, title, content }) => {
+  const { players, setSelectedPlayers, dispatch } = useContext(gameContext);
   return (
     <DialogContent
       className="
@@ -31,7 +29,7 @@ const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
       <div className="absolute -top-10 -left-10 w-40 h-40 bg-cyan-400/10 blur-[80px] rounded-full" />
       <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-500/10 blur-[90px] rounded-full" />
 
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-6 ">
         {/* Header */}
         <DialogHeader className="text-center mb-6">
           <DialogTitle className="text-white text-lg font-bold">
@@ -41,11 +39,11 @@ const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
         </DialogHeader>
 
         {/* Options Grid */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {content.map((num) => (
             <button
               key={num}
-              onClick={() => initializePlayers(num)}
+              onClick={() => setSelectedPlayers(num)}
               className={cn(
                 `
     aspect-square w-full
@@ -91,7 +89,9 @@ const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
 
           <div className="flex justify-end mt-6">
             <Button
-              onClick={confirm}
+              onClick={() =>
+                dispatch({ type: "OPEN_MODAL", payload: "SELECT_PIECE" })
+              }
               className="
               px-4 py-2 rounded-xl
               font-semibold text-white cursor-pointer
@@ -102,7 +102,7 @@ const PlayerSelectModal = ({ onClose, confirm, title, content }) => {
               shadow-[0_0_25px_rgba(34,211,238,0.25)]
             "
             >
-              Save
+              Next
             </Button>
           </div>
         </div>

@@ -1,23 +1,19 @@
 import { useContext } from "react";
 import { Dialog } from "@/components/ui/dialog";
-import { gameContext } from "@/context/GameContext";
+import { gameContext } from "@/context/GameContextProvider";
 import ConfirmationModal from "./ConfirmationModal";
 import ColorSelectModal from "./ColorSelectModal";
 import PlayerSelectModal from "./PlayerSelectModal";
 import PieceSelectModal from "./PieceSelectModal";
 import { useNavigate } from "react-router-dom";
-import { defaultPlayers } from "@/constant/player.constants";
 
 const BaseModal = () => {
-  const { savePlayers, players, setPlayers, activeModal, dispatch } =
-    useContext(gameContext);
+  const { players, activeModal, dispatch } = useContext(gameContext);
 
   const navigate = useNavigate();
 
   const handleQuit = () => {
     dispatch({ type: "CLOSE_MODAL" });
-    localStorage.removeItem("players");
-    setPlayers(defaultPlayers);
     navigate("/dashboard");
   };
 
@@ -29,18 +25,18 @@ const BaseModal = () => {
       {activeModal === "SELECT_PLAYER" && (
         <PlayerSelectModal
           title="Select Player"
-          content={[2, 4]}
+          content={[2, 3, 4, 5, 6, 7, 8, 9, 10]}
           onClose={() => dispatch({ type: "CLOSE_MODAL" })}
-          confirm={() => savePlayers()}
+          confirm={() => dispatch({ type: "CLOSE_MODAL" })}
         />
       )}
 
       {activeModal === "SELECT_PIECE" && (
         <PieceSelectModal
           title="Select Piece"
-          content={[2, 4, 6, 8]}
+          content={[1, 2, 3, 4, 5, 6]}
           onClose={() => dispatch({ type: "CLOSE_MODAL" })}
-          confirm={() => savePlayers()}
+          confirm={() => dispatch({ type: "CLOSE_MODAL" })}
         />
       )}
 
@@ -49,14 +45,14 @@ const BaseModal = () => {
           title="Select Color"
           content={players}
           onClose={() => dispatch({ type: "CLOSE_MODAL" })}
-          confirm={() => savePlayers()}
+          confirm={() => dispatch({ type: "CLOSE_MODAL" })}
         />
       )}
 
       {activeModal === "QUIT" && (
         <ConfirmationModal
           title="Confirmation"
-          content="Are you sure you want to Quite"
+          content="Are you sure you want to Quite?"
           onClose={() => dispatch({ type: "CLOSE_MODAL" })}
           confirm={handleQuit}
         />

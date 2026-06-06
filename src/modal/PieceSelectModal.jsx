@@ -4,52 +4,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  pieceOfHome1,
-  pieceOfHome2,
-  pieceOfHome3,
-  pieceOfHome4,
-} from "@/constant/homeAreas.constants";
-import { gameContext } from "@/context/GameContext";
+import { gameContext } from "@/context/GameContextProvider";
 import { cn } from "@/lib/utils";
 import { Circle } from "lucide-react";
 import { useContext } from "react";
 
-const createPieces = (count, startPositions) => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    position: startPositions[i] ?? null,
-    isActive: false,
-    isHome: true,
-    stepsMoved: 0,
-    currentPosition: null,
-  }));
-};
-
-const homeMap = {
-  "player-1": pieceOfHome1,
-  "player-2": pieceOfHome2,
-  "player-3": pieceOfHome3,
-  "player-4": pieceOfHome4,
-};
-
-const PieceSelectModal = ({ onClose, confirm, title, content }) => {
-  const { players, setPlayers } = useContext(gameContext);
-
-  const handlePieceChange = (value) => {
-    const count = Number(value);
-
-    const updatedPlayers = players.map((player) => {
-      const actualPosition = homeMap[player.status] || [];
-
-      return {
-        ...player,
-        piece: createPieces(count, actualPosition),
-      };
-    });
-
-    setPlayers(updatedPlayers);
-  };
+const PieceSelectModal = ({ onClose, title, content }) => {
+  const { players, setSelectedPieces, dispatch, createPlayers } =
+    useContext(gameContext);
 
   return (
     <DialogContent
@@ -79,11 +41,11 @@ const PieceSelectModal = ({ onClose, confirm, title, content }) => {
         </DialogHeader>
 
         {/* Options Grid */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {content.map((num) => (
             <button
               key={num}
-              onClick={() => handlePieceChange(num)}
+              onClick={() => setSelectedPieces(num)}
               className={cn(
                 `
                   aspect-square w-full
@@ -96,7 +58,7 @@ const PieceSelectModal = ({ onClose, confirm, title, content }) => {
                   hover:border-cyan-400/40
                   transition-all duration-300
                 `,
-                players[0].piece.length === num &&
+                players[0]?.piece?.length === num &&
                   "border-cyan-400/40 bg-cyan-500/10",
               )}
             >
@@ -131,7 +93,10 @@ const PieceSelectModal = ({ onClose, confirm, title, content }) => {
 
           <div className="flex justify-end mt-6">
             <Button
-              onClick={confirm}
+              onClick={() => (
+                dispatch({ type: "OPEN_MODAL", payload: "SELECT_COLOR" }),
+                createPlayers()
+              )}
               className="
               px-4 py-2 rounded-xl
               font-semibold text-white cursor-pointer
@@ -142,7 +107,7 @@ const PieceSelectModal = ({ onClose, confirm, title, content }) => {
               shadow-[0_0_25px_rgba(34,211,238,0.25)]
             "
             >
-              Save
+              Next
             </Button>
           </div>
         </div>

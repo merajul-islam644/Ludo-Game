@@ -1,10 +1,10 @@
-import LudoBoard from "./ludo-board/LudoBoard";
 import { Route, Routes } from "react-router-dom";
-import DashBoard from "./dashboard/DashBoard";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "./authentication/Login";
 import Signup from "./authentication/Signup";
 import { Toaster } from "sonner";
+import LudoBoard from "./ludo-board/LudoBoard";
+import DashBoard from "./dashboard/DashBoard";
 import BaseModal from "./modal/BaseModal";
 
 const App = () => {
@@ -32,7 +32,7 @@ const App = () => {
           }
         />
       </Routes>
-      <BaseModal/>
+      <BaseModal />
       <Toaster richColors position="bottom-right" />
     </div>
   );

@@ -6,11 +6,13 @@ import {
 } from "@/components/ui/dialog";
 
 import { useContext } from "react";
-import { gameContext } from "@/context/GameContext";
+import { gameContext } from "@/context/GameContextProvider";
 import { SelectColor } from "@/select-color/SelectColor";
+import { useNavigate } from "react-router-dom";
 
-const ColorSelectModal = ({ onClose, confirm }) => {
-  const { players } = useContext(gameContext);
+const ColorSelectModal = ({ onClose }) => {
+  const { players, dispatch } = useContext(gameContext);
+  const navigate = useNavigate();
 
   return (
     <DialogContent
@@ -66,7 +68,9 @@ const ColorSelectModal = ({ onClose, confirm }) => {
           </Button>
 
           <Button
-            onClick={confirm}
+            onClick={() => {
+              (navigate("/ludoBoard"), dispatch({ type: "CLOSE_MODAL" }));
+            }}
             className="
               px-4 py-2 rounded-xl
               font-semibold text-white
@@ -77,7 +81,7 @@ const ColorSelectModal = ({ onClose, confirm }) => {
               shadow-[0_0_25px_rgba(34,211,238,0.25)]
             "
           >
-            Save
+            Play
           </Button>
         </div>
       </div>
