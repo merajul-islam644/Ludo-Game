@@ -217,12 +217,15 @@ import {
 } from "@/constants/constants";
 import { onValue, ref, set } from "firebase/database";
 import { database } from "@/firebase";
+import { getAuth } from "firebase/auth";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const gameContext = createContext();
 
 const GameContextProvider = ({ children }) => {
   const [modalState, dispatch] = useReducer(modalReducer, initialModalState);
+  const auth = getAuth();
+  const uid = auth.currentUser?.uid;
 
   const [selectedPlayers, setSelectedPlayers] = useState(4);
   const [selectedPieces, setSelectedPieces] = useState(4);
@@ -289,7 +292,8 @@ const GameContextProvider = ({ children }) => {
   // FIREBASE LISTENER - PLAYERS
   // -----------------------------
   useEffect(() => {
-    const playersRef = ref(database, "players");
+    if (!uid) return;
+    const playersRef = ref(database, `users/${uid}/players`);
 
     const unsubPlayers = onValue(playersRef, (snapshot) => {
       const data = snapshot.val();
@@ -300,13 +304,15 @@ const GameContextProvider = ({ children }) => {
     });
 
     return () => unsubPlayers();
-  }, []);
+  }, [uid]);
 
   // -----------------------------
   // FIREBASE LISTENER - CURRENT PLAYER
   // -----------------------------
   useEffect(() => {
-    const currentPlayerRef = ref(database, "currentPlayer");
+    if (!uid) return;
+
+    const currentPlayerRef = ref(database, `users/${uid}/currentPlayer`);
 
     const unsubCurrent = onValue(currentPlayerRef, (snapshot) => {
       const data = snapshot.val();
@@ -316,13 +322,15 @@ const GameContextProvider = ({ children }) => {
     });
 
     return () => unsubCurrent();
-  }, []);
+  }, [uid]);
 
   // -----------------------------
   // FIREBASE LISTENER - DICEVALUE
   // -----------------------------
   useEffect(() => {
-    const diceRef = ref(database, "diceValue");
+    if (!uid) return;
+
+    const diceRef = ref(database, `users/${uid}/diceValue`);
 
     const unsubDice = onValue(diceRef, (snapshot) => {
       const data = snapshot.val();
@@ -332,15 +340,15 @@ const GameContextProvider = ({ children }) => {
     });
 
     return () => unsubDice();
-  }, []);
+  }, [uid]);
 
   // -----------------------------
   // SYNC PLAYERS → FIREBASE
   // -----------------------------
   useEffect(() => {
-    if (isHydrating) return;
-    set(ref(database, "players"), players);
-  }, [players, isHydrating]);
+    if (!uid) return;
+    set(ref(database, `users/${uid}/players`), players);
+  }, [players, isHydrating, uid]);
 
   // -----------------------------
   // SYNC CURRENT PLAYER → FIREBASE
@@ -361,8 +369,9 @@ const GameContextProvider = ({ children }) => {
   // SYNC CURRENT PLAYERS DICEVALUE → FIREBASE
   // -----------------------------
   useEffect(() => {
-    set(ref(database, "diceValue"), diceValue);
-  }, [diceValue]);
+    if (!uid) return;
+    set(ref(database, `users/${uid}/diceValue`), diceValue);
+  }, [diceValue, uid]);
 
   // -----------------------------
   // NEXT TURN (FIXED)
@@ -444,20 +453,6 @@ const GameContextProvider = ({ children }) => {
 
     if (!hasRoled && allAtEnd) {
       nextTurn();
-    }
-
-    const hasWon = players
-      .find((player) => player.id === currentPlayerId)
-      ?.pieces.every((piece) => piece.stepsMoved === 56);
-
-    if (hasWon) {
-      setPlayers((prevPlayers) =>
-        prevPlayers.map((player) =>
-          player.id === currentPlayerId
-            ? { ...player, winningStatus: "Champion" }
-            : player,
-        ),
-      );
     }
   }, [currentPlayerId, players, nextTurn, diceValue, hasRoled]);
 
