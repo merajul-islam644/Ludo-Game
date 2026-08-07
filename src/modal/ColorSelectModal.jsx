@@ -69,7 +69,8 @@ const ColorSelectModal = ({ onClose }) => {
 
           <Button
             onClick={() => {
-              (navigate("/ludoBoard"), dispatch({ type: "CLOSE_MODAL" }));
+              navigate("/ludoBoard");
+              dispatch({ type: "CLOSE_MODAL" });
             }}
             className="
               px-4 py-2 rounded-xl

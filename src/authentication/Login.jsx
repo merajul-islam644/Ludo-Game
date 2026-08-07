@@ -30,9 +30,9 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
 
       toast.success("Login successful");
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
-      console.log(err);
+      if (import.meta.env.DEV) console.error(err);
 
       setError("Invalid email or password");
     }
@@ -44,9 +44,9 @@ const Login = () => {
       await signInWithPopup(auth, provider);
 
       toast.success("Login successful");
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
-      console.log(err);
+      if (import.meta.env.DEV) console.error(err);
 
       setError("Login failed");
     }
@@ -74,40 +74,42 @@ const Login = () => {
         </CardHeader>
 
         <CardContent className="space-y-5">
-          {/* EMAIL */}
-          <div className="space-y-2">
-            <Label className="text-gray-300">Email</Label>
-            <Input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/5 border border-cyan-400/20 text-white focus-visible:ring-cyan-400 rounded-xl py-5"
-            />
-          </div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            {/* EMAIL */}
+            <div className="space-y-2">
+              <Label className="text-gray-300">Email</Label>
+              <Input
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-white/5 border border-cyan-400/20 text-white focus-visible:ring-cyan-400 rounded-xl py-5"
+              />
+            </div>
 
-          {/* PASSWORD */}
-          <div className="space-y-2">
-            <Label className="text-gray-300">Password</Label>
-            <Input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/5 border border-purple-400/20 text-white focus-visible:ring-purple-400 rounded-xl py-5"
-            />
-          </div>
+            {/* PASSWORD */}
+            <div className="space-y-2">
+              <Label className="text-gray-300">Password</Label>
+              <Input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-white/5 border border-purple-400/20 text-white focus-visible:ring-purple-400 rounded-xl py-5"
+              />
+            </div>
 
-          {/* ERROR */}
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+            {/* ERROR */}
+            {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          {/* LOGIN BUTTON */}
-          <Button
-            onClick={handleLogin}
-            className="w-full h-14 rounded-2xl font-black text-lg text-white bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-[1.03] transition-all duration-300 cursor-pointer"
-          >
-            LOGIN
-          </Button>
+            {/* LOGIN BUTTON */}
+            <Button
+              type="submit"
+              className="w-full h-14 rounded-2xl font-black text-lg text-white bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-[1.03] transition-all duration-300 cursor-pointer"
+            >
+              LOGIN
+            </Button>
+          </form>
 
           {/* DIVIDER */}
           <div className="text-center text-gray-400 text-sm">OR</div>

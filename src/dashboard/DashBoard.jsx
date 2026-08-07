@@ -1,32 +1,37 @@
 import { Button } from "@/components/ui/button";
-import { useContext, useEffect, useState } from "react";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { useContext } from "react";
+import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { gameContext } from "@/context/GameContextProvider";
+import { useAuth } from "@/useAuth";
 
 const DashBoard = () => {
-  const { dispatch } = useContext(gameContext);
-  const [user, setUser] = useState(null);
+  const { dispatch, setGameMode } = useContext(gameContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (!currentUser) navigate("/");
-    });
+  const handlePlayLocal = () => {
+    setGameMode("local");
+    dispatch({ type: "OPEN_MODAL", payload: "SELECT_PLAYER" });
+  };
 
-    return () => unsubscribe();
-  }, [navigate]);
+  const handlePlayOnline = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    dispatch({ type: "OPEN_MODAL", payload: "ROOM" });
+  };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       toast.success("Logged out");
-      navigate("/");
     } catch (err) {
-      console.log(err.message);
+      if (import.meta.env.DEV) console.error(err.message);
+      toast.error("Logout failed");
     }
   };
 
@@ -59,21 +64,30 @@ const DashBoard = () => {
 
           {/* Buttons */}
           <div className="space-y-3">
-            <Button
-              onClick={() =>
-                dispatch({ type: "OPEN_MODAL", payload: "SELECT_PLAYER" })
-              }
-              className="w-full h-12 rounded-xl font-bold text-white bg-linear-to-r from-fuchsia-500 via-pink-500 to-orange-400 shadow-[0_0_25px_rgba(236,72,153,0.6)] hover:scale-[1.03] transition"
-            >
-              Select Player
-            </Button>
+            {!user && (
+              <Button
+                onClick={handlePlayLocal}
+                className="w-full h-12 rounded-xl font-bold text-white bg-linear-to-r from-fuchsia-500 via-pink-500 to-orange-400 shadow-[0_0_25px_rgba(236,72,153,0.6)] hover:scale-[1.03] transition"
+              >
+                Play Local
+              </Button>
+            )}
 
             <Button
-              onClick={handleLogout}
+              onClick={handlePlayOnline}
               className="w-full h-12 rounded-xl font-bold text-white bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_25px_rgba(34,211,238,0.6)] hover:scale-[1.03] transition"
             >
-              Login to Play online
+              {user ? "Play Online" : "Login to Play Online"}
             </Button>
+
+            {user && (
+              <Button
+                onClick={handleLogout}
+                className="w-full h-10 rounded-xl font-semibold text-white bg-white/10 hover:bg-white/20 transition"
+              >
+                Logout
+              </Button>
+            )}
           </div>
 
           {/* Dice Glow Section */}

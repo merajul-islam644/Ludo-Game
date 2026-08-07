@@ -9,27 +9,30 @@ import {
   Star,
 } from "lucide-react";
 import { gameContext } from "@/context/GameContextProvider";
+import { useMovePiece } from "@/hooks/useMovePiece";
 import {
   boardPath,
   borderArea,
+  colorClasses,
   endZone,
-  homeAreaFour,
-  homeAreaTwo,
+  homeObject,
   pulseHomeArea,
   safeZone,
 } from "@/constants/constants";
 
 const GridBoard = ({ players }) => {
   const {
-    setPlayers,
     diceValue,
     hasRoled,
-    setHasRoled,
     currentPlayerId,
-    nextTurn,
-    setMovingPiecerOPlayerId,
     movingPieceOrPlayerId,
+    gameMode,
+    myPlayerId,
   } = useContext(gameContext);
+  const movePiece = useMovePiece();
+
+  const canControl = (playerId) =>
+    gameMode !== "online" || myPlayerId === playerId;
 
   const directionIcons = {
     8: <ArrowDown color="green" />,
@@ -46,80 +49,27 @@ const GridBoard = ({ players }) => {
     return null;
   };
 
-  const movePiece = (playerId, pieceId) => {
-    setMovingPiecerOPlayerId({ pieceId, playerId });
-    setHasRoled(false);
-
-    const movingPlayer = players.find((p) => p.id === playerId);
-    const movingPiece = movingPlayer.pieces.find((p) => p.id === pieceId);
-
-    const finalPosition = movingPlayer.path[movingPiece.stepsMoved + diceValue];
-
-    let count = 0;
-
-    const step = () => {
-      setPlayers((prevPlayers) =>
-        prevPlayers.map((player) => {
-          if (player.id !== playerId) return player;
-
-          return {
-            ...player,
-            pieces: player.pieces.map((piece) => {
-              if (piece.id !== pieceId) return piece;
-
-              const newPosition = player.path[piece.stepsMoved + 1];
-
-              return {
-                ...piece,
-                stepsMoved: piece.stepsMoved + 1,
-                currentPosition: newPosition,
-              };
-            }),
-          };
-        }),
-      );
-
-      count++;
-
-      if (count < diceValue) {
-        setTimeout(step, 250);
-        return;
-      }
-
-      setPlayers((prevPlayers) =>
-        prevPlayers.map((player) => {
-          if (player.id === playerId) return player;
-
-          return {
-            ...player,
-            pieces: player.pieces.map((piece) =>
-              piece.currentPosition === finalPosition &&
-              !safeZone.includes(finalPosition)
-                ? {
-                    ...piece,
-                    currentPosition: 0,
-                    isHome: true,
-                    stepsMoved: 0,
-                  }
-                : piece,
-            ),
-          };
-        }),
-      );
-
-      if (diceValue < 6) {
-        nextTurn();
-      }
-    };
-
-    setTimeout(step, 250);
+  // Slots (1-4) not currently occupied by a real player still need their
+  // home-area quadrant colored on the board, otherwise that whole corner
+  // renders blank/unstyled — previously this only ever handled exactly
+  // 2 players (hardcoded to slots 2 & 4), so 3-player games left slot 4's
+  // quadrant completely uncolored.
+  const usedColors = new Set(players.map((p) => p.color));
+  const unusedHomeColor = (path) => {
+    const slot = Object.keys(homeObject).find(
+      (slotId) => homeObject[slotId].includes(path) && !usedColors.has(colorClasses[slotId]),
+    );
+    return slot ? colorClasses[slot] : "";
   };
+
   return (
     <div className="grid grid-cols-15">
       {boardPath.map((path) => {
         const colorHomeArea = players.find((p) => p.homeArea?.includes(path));
 
-        const homeColor = colorHomeArea ? colorHomeArea.color : "";
+        const homeColor = colorHomeArea
+          ? colorHomeArea.color
+          : unusedHomeColor(path);
 
         const border = borderArea.includes(path) ? "border border-black" : "";
 
@@ -128,21 +78,11 @@ const GridBoard = ({ players }) => {
             ? "animate-[pulse_0.3s_infinite]"
             : "";
 
-        const playerTwo =
-          players.length === 2 && homeAreaTwo.includes(path)
-            ? "bg-green-500"
-            : "";
-
-        const playerFour =
-          players.length === 2 && homeAreaFour.includes(path)
-            ? "bg-cyan-500"
-            : "";
-
         return (
           <div key={path}>
             <div
               className={`relative h-7 w-7 flex items-center justify-center
-                ${homeColor} ${border} ${pulse} ${playerTwo} ${playerFour}`}
+                ${homeColor} ${border} ${pulse}`}
             >
               <div className="absolute">{setIcon(path)}</div>
               {/* {path} */}
@@ -167,6 +107,7 @@ const GridBoard = ({ players }) => {
                         onClick={() => {
                           if (
                             currentPlayerId === player.id &&
+                            canControl(player.id) &&
                             hasRoled &&
                             piece.stepsMoved + diceValue <=
                               player.path.length - 1

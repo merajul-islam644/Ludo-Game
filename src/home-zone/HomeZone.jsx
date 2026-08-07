@@ -1,11 +1,19 @@
 import { useContext } from "react";
 import { Loader, MapPin } from "lucide-react";
-import { safeZone } from "@/constants/constants";
 import { gameContext } from "@/context/GameContextProvider";
 
 const HomeZone = ({ position, color, pieces, playerId }) => {
-  const { setPlayers, hasRoled, diceValue, currentPlayerId, setHasRoled } =
-    useContext(gameContext);
+  const {
+    setPlayers,
+    hasRoled,
+    diceValue,
+    currentPlayerId,
+    setHasRoled,
+    gameMode,
+    myPlayerId,
+  } = useContext(gameContext);
+
+  const canControl = gameMode !== "online" || myPlayerId === playerId;
   const releasePiece = (pieceId) => {
     setHasRoled(false);
     setPlayers((prev) =>
@@ -18,7 +26,13 @@ const HomeZone = ({ position, color, pieces, playerId }) => {
                   ? {
                       ...piece,
                       isHome: false,
-                      currentPosition: safeZone[player.id - 1],
+                      // A piece's release square must be its own player's
+                      // path[0] — not safeZone[player.id - 1]. In a 2-player
+                      // game, player 2 actually plays in visual slot 3 (see
+                      // createPlayers' special-case in GameContextProvider),
+                      // so safeZone[id - 1] pointed at slot 2's entry square,
+                      // a square not even on player 2's real path.
+                      currentPosition: player.path[0],
                       retrieveId: player.id,
                       color: player.color,
                     }
@@ -47,7 +61,12 @@ const HomeZone = ({ position, color, pieces, playerId }) => {
             {piece.isHome ? (
               <div
                 onClick={() => {
-                  if (diceValue === 6 && hasRoled) {
+                  if (
+                    currentPlayerId === playerId &&
+                    canControl &&
+                    diceValue === 6 &&
+                    hasRoled
+                  ) {
                     releasePiece(piece.id);
                   }
                 }}
