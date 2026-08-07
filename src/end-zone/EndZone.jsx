@@ -1,36 +1,43 @@
 import { useContext } from "react";
-import { endZoneTrainglePosition } from "../constants/constants";
+import { colorClasses, endZoneTrainglePosition } from "../constants/constants";
 import { gameContext } from "@/context/GameContextProvider";
 
 const EndZone = () => {
   const { players } = useContext(gameContext);
+
+  // A player's id doesn't always match their visual slot — in a 2-player
+  // game player 2 actually sits in slot 3 (see createPlayers' special-case
+  // in GameContextProvider), so the slot has to be derived from their
+  // assigned color, not assumed from id.
+  const slotForColor = (color) =>
+    Number(Object.keys(colorClasses).find((slot) => colorClasses[slot] === color));
+
+  const usedColors = new Set(players.map((p) => p.color));
+  const unusedSlots = [1, 2, 3, 4].filter(
+    (slot) => !usedColors.has(colorClasses[slot]),
+  );
+
   return (
     <div className="relative overflow-hidden w-21 h-21 border border-black">
-      {players.map((player) => (
-        <div
-          key={player.id}
-          className={`${endZoneTrainglePosition[player.id - 1]?.className} ${player.color}`}
-          style={{
-            clipPath:
-              players.length === 2 && player.id === 2
-                ? endZoneTrainglePosition[player.id]?.style
-                : endZoneTrainglePosition[player.id - 1]?.style,
-          }}
-        />
-      ))}
+      {players.map((player) => {
+        const slot = slotForColor(player.color);
+        return (
+          <div
+            key={player.id}
+            className={`${endZoneTrainglePosition[slot - 1]?.className} ${player.color}`}
+            style={{ clipPath: endZoneTrainglePosition[slot - 1]?.style }}
+          />
+        );
+      })}
 
-      {/* While players length is 2 */}
-      {[2, 3].map((item) => (
+      {/* Decorative fill for slots with no real player in them, so the
+          finish center doesn't have a blank wedge. */}
+      {unusedSlots.map((slot) => (
         <div
-          key={item}
-          className={`${endZoneTrainglePosition[1]?.className} ${item === 2 ? "bg-green-500" : "bg-cyan-500"}`}
-          style={{
-            clipPath:
-              players.length === 2 && item === 2
-                ? endZoneTrainglePosition[1]?.style
-                : endZoneTrainglePosition[3]?.style,
-          }}
-        ></div>
+          key={slot}
+          className={`${endZoneTrainglePosition[slot - 1]?.className} ${colorClasses[slot]}`}
+          style={{ clipPath: endZoneTrainglePosition[slot - 1]?.style }}
+        />
       ))}
     </div>
   );

@@ -29,7 +29,7 @@ const SafeZonePiecesPositionComponent = ({ position, safeZoneNumber }) => {
         return "grid-cols-3";
 
       default:
-        break;
+        return "grid-cols-3";
     }
   };
 
