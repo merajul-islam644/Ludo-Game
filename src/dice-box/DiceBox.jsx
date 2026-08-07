@@ -19,9 +19,19 @@ const DiceBox = ({ player, side, position }) => {
     currentPlayerId,
     setHasRoled,
     hasRoled,
-    setTestingPiece,
+    gameMode,
+    myPlayerId,
+    turnSecondsLeft,
+    turnTimeLimit,
   } = useContext(gameContext);
   const [isRolling, setIsRolling] = useState(false);
+
+  const canControl = gameMode !== "online" || myPlayerId === player.id;
+  const isDisabled = player.id !== currentPlayerId || !canControl || hasRoled;
+  const isMyTurn =
+    gameMode === "online" && player.id === currentPlayerId && !hasRoled;
+  const timePercent = Math.max(0, (turnSecondsLeft / turnTimeLimit) * 100);
+  const barPosition = player.id === 1 || player.id === 2 ? "-top-1.5" : "-bottom-1.5";
 
   const handleRollDice = () => {
     setIsRolling(true);
@@ -31,7 +41,6 @@ const DiceBox = ({ player, side, position }) => {
       setDiceValue(rollValue);
       setIsRolling(false);
       setHasRoled(true);
-      setTestingPiece(true);
     }, 100);
   };
 
@@ -40,14 +49,28 @@ const DiceBox = ({ player, side, position }) => {
       {/* Dice */}
       {isLeft ? (
         <div className="flex justify-center items-center ">
-          <div className="h-15 w-15 border rounded-r flex items-center justify-center bg-white">
+          <div className="relative h-15 w-15 border rounded-r flex items-center justify-center bg-white">
             <button
-              disabled={player.id !== currentPlayerId || hasRoled}
+              disabled={isDisabled}
               onClick={handleRollDice}
-              className={`${player.id !== currentPlayerId ? "cursor-not-allowed" : ""} ${isRolling ? "ludo-dice" : ""}`}
+              className={`${isDisabled ? "cursor-not-allowed" : ""} ${isRolling ? "ludo-dice" : ""}`}
             >
               {dices[diceValue]}
             </button>
+            {isMyTurn && (
+              <div
+                key={currentPlayerId}
+                className={`absolute ${barPosition} left-0 w-full h-1.5 rounded-full bg-black/20 overflow-hidden`}
+              >
+                <div
+                  className="h-full bg-red-500"
+                  style={{
+                    width: `${timePercent}%`,
+                    transition: "width 1s linear",
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Player Box */}
@@ -89,14 +112,28 @@ const DiceBox = ({ player, side, position }) => {
               />
             </div>
           </div>
-          <div className="h-15 w-15 border rounded-l flex items-center justify-center bg-white">
+          <div className="relative h-15 w-15 border rounded-l flex items-center justify-center bg-white">
             <button
-              disabled={player.id !== currentPlayerId || hasRoled}
+              disabled={isDisabled}
               onClick={handleRollDice}
-              className={`${player.id !== currentPlayerId ? "cursor-not-allowed" : ""} ${isRolling ? "ludo-dice" : ""}`}
+              className={`${isDisabled ? "cursor-not-allowed" : ""} ${isRolling ? "ludo-dice" : ""}`}
             >
               {dices[diceValue]}
             </button>
+            {isMyTurn && (
+              <div
+                key={currentPlayerId}
+                className={`absolute ${barPosition} left-0 w-full h-1.5 rounded-full bg-black/20 overflow-hidden`}
+              >
+                <div
+                  className="h-full bg-red-500"
+                  style={{
+                    width: `${timePercent}%`,
+                    transition: "width 1s linear",
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

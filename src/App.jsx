@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
 import Login from "./authentication/Login";
 import Signup from "./authentication/Signup";
 import { Toaster } from "sonner";
@@ -11,26 +10,10 @@ const App = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<DashBoard />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashBoard />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/ludoBoard"
-          element={
-            <ProtectedRoute>
-              <LudoBoard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/ludoBoard" element={<LudoBoard />} />
       </Routes>
       <BaseModal />
       <Toaster richColors position="bottom-right" />

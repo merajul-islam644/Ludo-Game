@@ -10,7 +10,8 @@ import { User } from "lucide-react";
 import { useContext } from "react";
 
 const PlayerSelectModal = ({ onClose, title, content }) => {
-  const { players, setSelectedPlayers, dispatch } = useContext(gameContext);
+  const { selectedPlayers, setSelectedPlayers, dispatch } =
+    useContext(gameContext);
   return (
     <DialogContent
       className="
@@ -56,7 +57,7 @@ const PlayerSelectModal = ({ onClose, title, content }) => {
     hover:border-cyan-400/40
     transition-all duration-300
   `,
-                players.length === num && "border-cyan-400/40 bg-cyan-500/10",
+                selectedPlayers === num && "border-cyan-400/40 bg-cyan-500/10",
               )}
             >
               {/* Circles */}

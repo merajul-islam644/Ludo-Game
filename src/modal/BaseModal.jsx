@@ -5,16 +5,21 @@ import ConfirmationModal from "./ConfirmationModal";
 import ColorSelectModal from "./ColorSelectModal";
 import PlayerSelectModal from "./PlayerSelectModal";
 import PieceSelectModal from "./PieceSelectModal";
+import RoomModal from "./RoomModal";
 import { useNavigate } from "react-router-dom";
 
 const BaseModal = () => {
-  const { players, activeModal, dispatch } = useContext(gameContext);
+  const { players, activeModal, dispatch, setGameMode, setRoomId, releaseSeat } =
+    useContext(gameContext);
 
   const navigate = useNavigate();
 
   const handleQuit = () => {
     dispatch({ type: "CLOSE_MODAL" });
-    navigate("/dashboard");
+    releaseSeat();
+    setGameMode("local");
+    setRoomId(null);
+    navigate("/");
   };
 
   return (
@@ -22,10 +27,14 @@ const BaseModal = () => {
       open={activeModal !== null}
       onOpenChange={() => dispatch({ type: "CLOSE_MODAL" })}
     >
+      {activeModal === "ROOM" && (
+        <RoomModal onClose={() => dispatch({ type: "CLOSE_MODAL" })} />
+      )}
+
       {activeModal === "SELECT_PLAYER" && (
         <PlayerSelectModal
           title="Select Player"
-          content={[2, 3, 4, 5, 6, 7, 8, 9, 10]}
+          content={[2, 3, 4]}
           onClose={() => dispatch({ type: "CLOSE_MODAL" })}
           confirm={() => dispatch({ type: "CLOSE_MODAL" })}
         />

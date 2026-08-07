@@ -28,7 +28,7 @@ const Signup = () => {
       toast.success("Signup Successfully");
       navigate("/");
     } catch (err) {
-      console.log(err);
+      if (import.meta.env.DEV) console.error(err);
 
       setError("Signup failed");
     }
@@ -92,7 +92,7 @@ const Signup = () => {
 
           {/* LOGIN LINK */}
           <p
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="text-center text-sm text-cyan-300 hover:underline cursor-pointer"
           >
             Already have an account? Login
